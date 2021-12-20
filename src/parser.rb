@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-SPEC = [
-
-  [/^\s+/, nil],
-  [/^\d+/, 'NUMBER'],
-  [/^"[^"]*/, 'STRING'],
-  [/^'[^']*/, 'STRING']
-
-].freeze
+require_relative './parser_implementation'
+require_relative './tokenizer_implementation'
 
 # parser class
 class Parser
+  include ParserImplementation
+
   def initialize
     @line = ''
     @tokenizer = Tokenizer.new
@@ -20,50 +16,13 @@ class Parser
     @tokenizer.load line
     @lookahead = @tokenizer.next_token
     @line = line
-    program(line)
-  end
-
-  private
-
-  def program(_string)
-    { type: 'Program', body: literal }
-  end
-
-  def literal
-    case @lookahead[:type]
-    when 'NUMBER'
-      numeric_literal
-    when 'STRING'
-      string_literal
-    else
-      puts 'Unexpected literal'
-    end
-  end
-
-  def string_literal
-    token = eat('STRING')
-     len = token[:value].length
-     { type: 'StringLiteral', value: token[:value].slice!(1..len).dup }
-  end
-
-  def numeric_literal
-    token = eat('NUMBER')
-    { type: 'NumericLiteral', value: token[:value] }
-  end
-
-  def eat(type)
-    token = @lookahead
-    puts "Unexpected end of input, expected: #{type}" unless token
-    puts "Unexpected end of input, expected: #{type}" unless token[:type] == type
-
-    @lookahead = @tokenizer.next_token
-
-    token
+    program
   end
 end
 
 # a class
 class Tokenizer
+  include TokenizerImplementation
   def initialize
     @cursor = 0
   end
@@ -82,22 +41,11 @@ class Tokenizer
 
       next unless token_value
 
-      return next_token if type.nil? # handles whitespace
+      return next_token if type.nil? # skip whitespaces & comments
 
       return { type: type, value: token_value }
     end
 
     puts "Unexpected token #{line}"
   end
-
-  private
-
-  def match(regex, line)
-    matched = line.match(regex)
-    return nil unless matched
-
-    @cursor += matched[0].length
-    matched[0]
-  end
 end
-
