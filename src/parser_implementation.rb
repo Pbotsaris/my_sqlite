@@ -15,7 +15,17 @@ module ParserImplementation
   end
 
   def statement
-    expression_statement
+    case @lookahead[:type]
+    when ';'
+      empty_statement
+    else
+      expression_statement
+    end
+  end
+
+  def empty_statement
+    eat(';')
+    { type: 'EmptyStatement', value: nil }
   end
 
   def expression_statement
