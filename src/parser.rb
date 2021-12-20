@@ -44,6 +44,7 @@ class Tokenizer
       return next_token if type.nil? # skip whitespaces & comments
 
       return { type: type, value: token_value }
+
     end
 
     puts "Unexpected token #{line}"

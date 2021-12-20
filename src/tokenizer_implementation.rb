@@ -4,10 +4,11 @@
 module TokenizerImplementation
   SPEC = [
 
-    [/^\s+/, nil], # whitespace
-    [/--.*/, nil], # comments
-    [/^\n/, nil], # linebreak
+    [/^\s+/, nil],              # whitespace
+    [/--.*/, nil],              # comments
+    [/^\n/, nil],               # linebreak
     [%r{^/\*[\s\S]*?\*/}, nil], # multiline comments
+    [/^;/, ';'],                # statements sep
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],
     [/^'[^']*/, 'STRING']
