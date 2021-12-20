@@ -3,7 +3,30 @@
 #  mixin for the Parser class
 module ParserImplementation
   def program
-    { type: 'Program', body: @lookahead ? literal : {} }
+    { type: 'Program', body: @lookahead ? statement_list : {} }
+  end
+
+  def statement_list
+    list = [statement]
+
+    list.append(statement) while @lookahead
+
+    list
+  end
+
+  def statement
+    expression_statement
+  end
+
+  def expression_statement
+    expr = expression
+    eat(';')
+
+    { type: 'ExpressionStatement', expression: expr }
+  end
+
+  def expression
+    literal
   end
 
   def literal
@@ -25,7 +48,7 @@ module ParserImplementation
 
   def numeric_literal
     token = eat('NUMBER')
-    { type: 'NumericLiteral', value: token[:value] }
+    { type: 'NumericLiteral', value: token[:value].to_i }
   end
 
   def eat(type)
