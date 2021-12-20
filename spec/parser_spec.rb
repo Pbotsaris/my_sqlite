@@ -29,7 +29,23 @@ describe 'Parser' do
     }
 
     parser = Parser.new
-    ast = parser.parse("      'hello world';")
+    ast = parser.parse('     "hello world";')
+    expect(ast).to eq(compare)
+  end
+
+  it 'rejects EmptyStatement' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: 'EmptyStatement',
+          value: nil
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse(';')
     expect(ast).to eq(compare)
   end
 
