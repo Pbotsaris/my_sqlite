@@ -8,6 +8,7 @@ module TokenizerImplementation
     [/^\n/, nil],               # linebreak
     [%r{^/\*[\s\S]*?\*/}, nil], # multiline comments
     [/^;/, ';'],                # statements sep
+    [/^,/, ','],                # identifier sep
 
     [/^from/im, 'FROM'],
     [/^select/im, 'SELECT'],
