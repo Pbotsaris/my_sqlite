@@ -55,7 +55,7 @@ module ParserImplementation
 
   def select_expression
     eat('SELECT')
-    single_identifier('SelectExpression')
+    multiple_identifiers('SelectExpression')
   end
 
   def assignment_expression; end
@@ -107,11 +107,29 @@ module ParserImplementation
     create_expression(token, type)
   end
 
+  def multiple_identifiers(type)
+    token = eat('IDENTIFIER')
+    expression = create_expression(token, type)
+    identifier = expression[:value]
+    eat(',')
+
+    while @lookahead && @lookahead[:type] == 'IDENTIFIER'
+      token = eat('IDENTIFIER')
+      identifier[:left] = { type: 'Identifier', name: token[:value], left: nil, right: nil }
+      identifier = identifier[:left]
+
+      eat(',') if @lookahead && @lookahead[:type] == ','
+    end
+
+    expression
+  end
+
   def create_expression(token, type)
-    if @lookahead[:type] == ';'
-      { type: type, value: { type: 'Identifier', name: token[:value] }, next: nil }
+    if @lookahead[:type] == ';' || @lookahead[:type] == ','
+      { type: type, value: { type: 'Identifier', name: token[:value], left: nil, right: nil }, left: nil, right: nil }
     else
-      { type: type, value: { type: 'Identifier', name: token[:value] }, next: expression }
+      { type: type, value: { type: 'Identifier', name: token[:value], left: nil, right: nil }, left: expression,
+        right: nil }
     end
   end
 end
