@@ -1,18 +1,22 @@
 # frozen_string_literal: true
 
-# private implementation for the Tokenizer class
 module TokenizerImplementation
+  # private implementation for the Tokenizer class
   SPEC = [
-
     [/^\s+/, nil],              # whitespace
     [/--.*/, nil],              # comments
     [/^\n/, nil],               # linebreak
     [%r{^/\*[\s\S]*?\*/}, nil], # multiline comments
     [/^;/, ';'],                # statements sep
+
+    [/^from/im, 'FROM'],
+    [/^select/im, 'SELECT'],
+
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],
-    [/^'[^']*/, 'STRING']
-
+    [/^'[^']*/, 'STRING'],
+    [/^=/, 'ASSIGN'],
+    [/\w+/, 'IDENTIFIER']
   ].freeze
 
   def match(regex, line)
