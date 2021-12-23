@@ -8,6 +8,7 @@ module ParserConstants
     UPDATE = 'UpdateExpression'
     INSERT = 'InsertExpression'
     DELETE = 'DeleteExpression'
+    VALUES = 'ValuesExpression'
   end
 
   module Statement
