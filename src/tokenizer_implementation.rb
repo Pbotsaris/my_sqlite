@@ -13,7 +13,7 @@ module TokenizerImplementation
     [/^from/im, 'FROM'],
     [/^select/im, 'SELECT'],
     [/^update/im, 'UPDATE'],
-    [/^insert/im, 'UPDATE'],
+    [/^insert into/im, 'INSERT'],
 
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],

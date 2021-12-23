@@ -46,6 +46,8 @@ module ParserImplementation
       select_expression
     when 'UPDATE'
       update_expression
+    when 'INSERT'
+      insert_expression
     else
       literal
     end
@@ -126,6 +128,14 @@ module ParserImplementation
     identifier = expression[:value]
     eat(',')
 
+    parse_through_multiple_identifier(identifier)
+
+    expression[:left] = self.expression unless @lookahead.nil? || @lookahead == ';'
+
+    expression
+  end
+
+  def parse_through_multiple_identifier(identifier)
     while @lookahead && @lookahead[:type] == 'IDENTIFIER'
       token = eat('IDENTIFIER')
       identifier[:left] = { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }
@@ -133,10 +143,6 @@ module ParserImplementation
 
       eat(',') if @lookahead && @lookahead[:type] == ','
     end
-
-    expression[:left] = self.expression unless @lookahead.nil? || @lookahead == ';'
-
-    expression
   end
 
   def create_expression(token, type)
