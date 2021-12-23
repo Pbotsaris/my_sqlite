@@ -12,12 +12,14 @@ module TokenizerImplementation
 
     [/^from/im, 'FROM'],
     [/^select/im, 'SELECT'],
+    [/^update/im, 'UPDATE'],
+    [/^insert/im, 'UPDATE'],
 
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],
     [/^'[^']*/, 'STRING'],
     [/^=/, 'ASSIGN'],
-    [/\w+/, 'IDENTIFIER']
+    [/\w+|\*/, 'IDENTIFIER']   # will also match the * wildcard
   ].freeze
 
   def match(regex, line)

@@ -2,7 +2,6 @@
 
 require 'readline'
 
-
 # a class
 class SQlite
   def run

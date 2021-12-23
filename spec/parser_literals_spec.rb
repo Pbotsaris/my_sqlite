@@ -1,15 +1,22 @@
 # frozen_string_literal: true
 
 require_relative '../src/parser'
+require_relative '../src/parser_constants'
+
+Statement = ParserConstants::Statement
+Expression = ParserConstants::Expression
+Types = ParserConstants::Types
 
 describe 'Parser Literals' do
+  include ParserConstants
+
   it 'rejects Numericliteral' do
     compare = {
       type: 'Program',
       body: [
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'NumericLiteral', value: 42 }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::NUMERIC_LITERAL, value: 42 }
         }
       ]
     }
@@ -24,8 +31,8 @@ describe 'Parser Literals' do
       type: 'Program',
       body: [
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'StringLiteral', value: 'hello world' }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::STRING_LITERAL, value: 'hello world' }
         }
       ]
     }
@@ -40,7 +47,7 @@ describe 'Parser Literals' do
       type: 'Program',
       body: [
         {
-          type: 'EmptyStatement',
+          type: Statement::EMPTY,
           value: nil
         }
       ]
@@ -56,8 +63,8 @@ describe 'Parser Literals' do
       type: 'Program',
       body: [
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'StringLiteral', value: 'hello world' }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::STRING_LITERAL, value: 'hello world' }
         }
       ]
     }
@@ -72,8 +79,8 @@ describe 'Parser Literals' do
       type: 'Program',
       body: [
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'StringLiteral', value: 'hello world' }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::STRING_LITERAL, value: 'hello world' }
         }
       ]
     }
@@ -90,8 +97,8 @@ describe 'Parser Literals' do
       type: 'Program',
       body: [
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'StringLiteral', value: 'hello world' }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::STRING_LITERAL, value: 'hello world' }
         }
       ]
 
@@ -111,12 +118,12 @@ describe 'Parser Literals' do
       type: 'Program',
       body: [
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'NumericLiteral', value: 42 }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::NUMERIC_LITERAL, value: 42 }
         },
         {
-          type: 'ExpressionStatement',
-          expression: { type: 'StringLiteral', value: 'hello' }
+          type: Statement::EXPRESSION,
+          expression: { type: Types::STRING_LITERAL, value: 'hello' }
         }
       ]
     }

@@ -13,7 +13,7 @@ require_relative './literal_test'
   #  puts ast.to_json
   # end
 
-      program = "SELECT id, name, dog ;"
+      program = "SELECT id, name FROM table ;"
       parser = Parser.new
       ast = parser.parse(program)
 
