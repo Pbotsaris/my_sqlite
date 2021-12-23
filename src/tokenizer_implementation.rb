@@ -3,6 +3,7 @@
 module TokenizerImplementation
   # private implementation for the Tokenizer class
   SPEC = [
+    [/^\(|^\)/, '()'],          # Parenthesis
     [/^\s+/, nil],              # whitespace
     [/--.*/, nil],              # comments
     [/^\n/, nil],               # linebreak
@@ -15,6 +16,7 @@ module TokenizerImplementation
     [/^update/im, 'UPDATE'],
     [/^insert into/im, 'INSERT'],
     [/^delete/im, 'DELETE'],
+    [/^values/im, 'VALUES'],
 
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],

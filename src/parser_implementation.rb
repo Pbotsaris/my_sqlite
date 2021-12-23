@@ -50,6 +50,8 @@ module ParserImplementation
       insert_expression
     when 'DELETE'
       delete_expression
+    when 'VALUES'
+      values_expression
     else
       literal
     end
@@ -57,27 +59,32 @@ module ParserImplementation
 
   def from_expression
     eat('FROM')
-    single_identifier(Expression::FROM)
+    single_argument(Expression::FROM)
   end
 
   def update_expression
     eat('UPDATE')
-    single_identifier(Expression::UPDATE)
+    single_argument(Expression::UPDATE)
   end
 
   def select_expression
     eat('SELECT')
-    multiple_identifiers(Expression::SELECT)
+    multiple_arguments(Expression::SELECT)
   end
 
   def insert_expression
     eat('INSERT')
-    single_identifier(Expression::INSERT)
+    single_argument(Expression::INSERT)
   end
 
   def delete_expression
     eat('DELETE')
-    no_identifier(Expression::DELETE)
+    no_argument(Expression::DELETE)
+  end
+
+  def values_expression
+    eat('VALUES')
+    parenthesized_argument(Expression::VALUES)
   end
 
   def assignment_expression; end
@@ -118,7 +125,7 @@ module ParserImplementation
     token
   end
 
-  def no_identifier(type)
+  def no_argument(type)
     return create_expression_without_arguments(type) unless @lookahead && @lookahead[:type] == 'IDENTIFIER'
 
     p "syntax error: #{type} takes no arguments"
@@ -126,7 +133,7 @@ module ParserImplementation
     nil
   end
 
-  def single_identifier(type)
+  def single_argument(type)
     unless @lookahead && @lookahead[:type] == 'IDENTIFIER'
       p "syntax error: #{type} requires arguments"
       @error = true
@@ -137,20 +144,27 @@ module ParserImplementation
     create_expression(token, type)
   end
 
-  def multiple_identifiers(type)
+  def parenthesized_argument(type)
+    eat('()')
+    expression = multiple_arguments(type)
+    eat('()')
+    expression
+  end
+
+  def multiple_arguments(type)
     token = eat('IDENTIFIER')
     expression = create_expression(token, type)
     identifier = expression[:value]
     eat(',')
 
-    parse_through_multiple_identifier(identifier)
+    parse_through_multiple_arguments(identifier)
 
     expression[:left] = self.expression unless @lookahead.nil? || @lookahead == ';'
 
     expression
   end
 
-  def parse_through_multiple_identifier(identifier)
+  def parse_through_multiple_arguments(identifier)
     while @lookahead && @lookahead[:type] == 'IDENTIFIER'
       token = eat('IDENTIFIER')
       identifier[:left] = { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }
@@ -161,19 +175,22 @@ module ParserImplementation
   end
 
   def create_expression(token, type)
-    if @lookahead[:type] == ';' || @lookahead[:type] == ','
-      { type: type,
-        value: { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }, left: nil, right: nil }
-    else
-      { type: type,
-        value: { type: Types::IDENTIFER, name: token[:value], left: nil, right: nil }, left: expression,
-        right: nil }
-    end
+    expression = expression_map(token, type)
+    return expression if @lookahead[:type] == ';' || @lookahead[:type] == ','
+
+    expression[:left] = self.expression
+    expression
   end
 
   def create_expression_without_arguments(type)
     return { type: type, value: nil, left: nil, right: nil } if @lookahead[:type] == ';'
 
     { type: type, value: nil, left: expression, right: nil }
+  end
+
+  def expression_map(token, type)
+    { type: type,
+      value: { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil },
+      left: nil, right: nil }
   end
 end

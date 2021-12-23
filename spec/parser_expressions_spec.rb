@@ -168,6 +168,33 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
+
+  it 'rejects VALUES expression' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::VALUES,
+                        left: nil,
+                        right: nil,
+                        value: { type: Types::IDENTIFIER,
+                                 name: 'hello',
+                                 right: nil,
+                                 left: { type: Types::IDENTIFIER,
+                                         name: 'world',
+                                         left: nil,
+                                         right: nil } } }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse('VALUES (hello, world) ;')
+    expect(ast).to eq(compare)
+  end
+
+
   it 'rejects multiple expression with mutiple identifiers' do
     compare = {
       type: 'Program',
