@@ -21,6 +21,25 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
+ it 'rejects INSERT expressions' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::INSERT,
+                        value: { type: Types::IDENTIFIER, name: 'table', left: nil, right: nil },
+                        left: nil, right: nil }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse('INSERT INTO table;')
+    expect(ast).to eq(compare)
+  end
+
+
   it 'rejects error when FROM lacks a table name argument' do
     compare = {
       type: 'Program',
