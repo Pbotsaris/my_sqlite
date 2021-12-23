@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require_relative './parser_constants'
+
 #  mixin for the Parser class
 module ParserImplementation
+  include ParserConstants
   def program
     { type: 'Program', body: @lookahead ? statement_list : {} }
   end
@@ -25,17 +28,15 @@ module ParserImplementation
 
   def empty_statement
     eat(';')
-    { type: 'EmptyStatement', value: nil }
+    { type: Statement::EMPTY, value: nil }
   end
 
   def expression_statement
     expr = expression
     eat(';')
 
-    { type: 'ExpressionStatement', expression: expr }
+    { type: Statement::EXPRESSION, expression: expr }
   end
-
-  # SELECT * FROM ciences;
 
   def expression
     case @lookahead[:type]
@@ -43,6 +44,8 @@ module ParserImplementation
       from_expression
     when 'SELECT'
       select_expression
+    when 'UPDATE'
+      update_expression
     else
       literal
     end
@@ -50,12 +53,22 @@ module ParserImplementation
 
   def from_expression
     eat('FROM')
-    single_identifier('FromExpression')
+    single_identifier(Expression::FROM)
+  end
+
+  def update_expression
+    eat('UPDATE')
+    single_identifier(Expression::UPDATE)
   end
 
   def select_expression
     eat('SELECT')
-    multiple_identifiers('SelectExpression')
+    multiple_identifiers(Expression::SELECT)
+  end
+
+  def insert_expression
+    eat('INSERT')
+    single_identifier(Expression::INSERT)
   end
 
   def assignment_expression; end
@@ -76,12 +89,12 @@ module ParserImplementation
   def string_literal
     token = eat('STRING')
     len = token[:value].length
-    { type: 'StringLiteral', value: token[:value].slice!(1..len).dup }
+    { type: Types::STRING_LITERAL, value: token[:value].slice!(1..len).dup }
   end
 
   def numeric_literal
     token = eat('NUMBER')
-    { type: 'NumericLiteral', value: token[:value].to_i }
+    { type: Types::NUMERIC_LITERAL, value: token[:value].to_i }
   end
 
   def eat(type)
@@ -115,20 +128,24 @@ module ParserImplementation
 
     while @lookahead && @lookahead[:type] == 'IDENTIFIER'
       token = eat('IDENTIFIER')
-      identifier[:left] = { type: 'Identifier', name: token[:value], left: nil, right: nil }
+      identifier[:left] = { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }
       identifier = identifier[:left]
 
       eat(',') if @lookahead && @lookahead[:type] == ','
     end
+
+    expression[:left] = self.expression unless @lookahead.nil? || @lookahead == ';'
 
     expression
   end
 
   def create_expression(token, type)
     if @lookahead[:type] == ';' || @lookahead[:type] == ','
-      { type: type, value: { type: 'Identifier', name: token[:value], left: nil, right: nil }, left: nil, right: nil }
+      { type: type,
+        value: { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }, left: nil, right: nil }
     else
-      { type: type, value: { type: 'Identifier', name: token[:value], left: nil, right: nil }, left: expression,
+      { type: type,
+        value: { type: Types::IDENTIFER, name: token[:value], left: nil, right: nil }, left: expression,
         right: nil }
     end
   end
