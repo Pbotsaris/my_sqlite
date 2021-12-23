@@ -14,6 +14,7 @@ module TokenizerImplementation
     [/^select/im, 'SELECT'],
     [/^update/im, 'UPDATE'],
     [/^insert into/im, 'INSERT'],
+    [/^delete/im, 'DELETE'],
 
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],

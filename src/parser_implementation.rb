@@ -48,6 +48,8 @@ module ParserImplementation
       update_expression
     when 'INSERT'
       insert_expression
+    when 'DELETE'
+      delete_expression
     else
       literal
     end
@@ -71,6 +73,11 @@ module ParserImplementation
   def insert_expression
     eat('INSERT')
     single_identifier(Expression::INSERT)
+  end
+
+  def delete_expression
+    eat('DELETE')
+    no_identifier(Expression::DELETE)
   end
 
   def assignment_expression; end
@@ -111,9 +118,17 @@ module ParserImplementation
     token
   end
 
+  def no_identifier(type)
+    return create_expression_without_arguments(type) unless @lookahead && @lookahead[:type] == 'IDENTIFIER'
+
+    p "syntax error: #{type} takes no arguments"
+    @error = true
+    nil
+  end
+
   def single_identifier(type)
     unless @lookahead && @lookahead[:type] == 'IDENTIFIER'
-      p 'syntax error: FROM requires a table name'
+      p "syntax error: #{type} requires arguments"
       @error = true
       return nil
     end
@@ -154,5 +169,11 @@ module ParserImplementation
         value: { type: Types::IDENTIFER, name: token[:value], left: nil, right: nil }, left: expression,
         right: nil }
     end
+  end
+
+  def create_expression_without_arguments(type)
+    return { type: type, value: nil, left: nil, right: nil } if @lookahead[:type] == ';'
+
+    { type: type, value: nil, left: expression, right: nil }
   end
 end

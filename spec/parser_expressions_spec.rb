@@ -21,7 +21,7 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
- it 'rejects INSERT expressions' do
+  it 'rejects INSERT expressions' do
     compare = {
       type: 'Program',
       body: [
@@ -39,6 +39,23 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
+  it 'rejects DELETE expressions' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::DELETE,
+                        value: nil,
+                        left: nil, right: nil }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse('DELETE;')
+    expect(ast).to eq(compare)
+  end
 
   it 'rejects error when FROM lacks a table name argument' do
     compare = {
@@ -63,8 +80,12 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::UPDATE,
-                        value: { type: Types::IDENTIFIER, name: 'books', left: nil, right: nil },
-                        left: nil, right: nil }
+                        value: { type: Types::IDENTIFIER,
+                                 name: 'books',
+                                 left: nil,
+                                 right: nil },
+                        left: nil,
+                        right: nil }
         }
       ]
     }
@@ -81,8 +102,12 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::SELECT,
-                        value: { type: Types::IDENTIFIER, name: 'id', left: nil, right: nil },
-                        left: nil, right: nil }
+                        value: { type: Types::IDENTIFIER,
+                                 name: 'id',
+                                 left: nil,
+                                 right: nil },
+                        left: nil,
+                        right: nil }
         }
       ]
 
@@ -90,6 +115,31 @@ describe 'Parser Expressions' do
 
     parser = Parser.new
     ast = parser.parse('SELECT id ;')
+    expect(ast).to eq(compare)
+  end
+
+  it 'rejects DELETE expressions with follow up FROM' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::DELETE,
+                        value: nil,
+                        left: { type: Expression::FROM,
+                                value: { type: Types::IDENTIFIER,
+                                         name: 'books',
+                                         left: nil,
+                                         right: nil },
+                                left: nil,
+                                right: nil },
+                        right: nil }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse('DELETE FROM books;')
     expect(ast).to eq(compare)
   end
 
