@@ -168,7 +168,6 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
-
   it 'rejects VALUES expression' do
     compare = {
       type: 'Program',
@@ -194,6 +193,33 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
+  it 'rejects WHERE expression with key=pair' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::WHERE,
+                        left: nil,
+                        right: nil,
+                        value: { type: Types::ASSIGN,
+                                 value: '=',
+                                 right: { type: Types::STRING_LITERAL,
+                                          value: 'seven',
+                                          left: nil,
+                                          right: nil },
+                                 left: { type: Types::IDENTIFIER,
+                                         name: 'age',
+                                         left: nil,
+                                         right: nil } } }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse("WHERE age = 'seven' ;")
+    expect(ast).to eq(compare)
+  end
 
   it 'rejects multiple expression with mutiple identifiers' do
     compare = {

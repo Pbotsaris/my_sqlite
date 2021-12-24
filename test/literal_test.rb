@@ -11,7 +11,7 @@ module LiteralTest
       type: 'Program',
       body: {
         type: 'NumericLiteral',
-        value: 42
+        value: 42,
       }
     }
 
