@@ -9,6 +9,7 @@ module ParserConstants
     INSERT = 'InsertExpression'
     DELETE = 'DeleteExpression'
     VALUES = 'ValuesExpression'
+    WHERE = 'WhereExpression'
   end
 
   module Statement
@@ -18,6 +19,7 @@ module ParserConstants
 
   module Types
     IDENTIFIER = 'Identifier'
+    ASSIGN = 'Assign'
     NUMERIC_LITERAL = 'NumericLiteral'
     STRING_LITERAL = 'StringLiteral'
   end

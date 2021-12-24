@@ -17,6 +17,7 @@ module TokenizerImplementation
     [/^insert into/im, 'INSERT'],
     [/^delete/im, 'DELETE'],
     [/^values/im, 'VALUES'],
+    [/^where/im, 'WHERE'],
 
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],

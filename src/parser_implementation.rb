@@ -52,6 +52,8 @@ module ParserImplementation
       delete_expression
     when 'VALUES'
       values_expression
+    when 'WHERE'
+      where_expression
     else
       literal
     end
@@ -87,6 +89,11 @@ module ParserImplementation
     parenthesized_argument(Expression::VALUES)
   end
 
+  def where_expression
+    eat('WHERE')
+    keypairs_argument(Expression::WHERE)
+  end
+
   def assignment_expression; end
 
   def literal
@@ -96,7 +103,7 @@ module ParserImplementation
     when 'STRING'
       string_literal
     else
-      puts 'Unexpected literal'
+      return puts 'Unexpected literal'
       @error = true
       nil
     end
@@ -105,24 +112,22 @@ module ParserImplementation
   def string_literal
     token = eat('STRING')
     len = token[:value].length
-    { type: Types::STRING_LITERAL, value: token[:value].slice!(1..len).dup }
+    { type: Types::STRING_LITERAL, value: token[:value].slice!(1..len).dup, left: nil, right: nil }
   end
 
   def numeric_literal
     token = eat('NUMBER')
-    { type: Types::NUMERIC_LITERAL, value: token[:value].to_i }
+    { type: Types::NUMERIC_LITERAL, value: token[:value].to_i, right: nil, left: nil }
   end
 
-  def eat(type)
-    token = @lookahead
-    unless token && token[:type] == type
-      puts "Unexpected end of input, expected: #{type}"
-      @error = true
-    end
+  def identifier
+    token = eat('IDENTIFIER')
+    { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }
+  end
 
-    @lookahead = @tokenizer.next_token
-
-    token
+  def assign_operator
+    token = eat('ASSIGN')
+    { type: Types::ASSIGN, value: token[:value], left: nil, right: nil }
   end
 
   def no_argument(type)
@@ -140,8 +145,8 @@ module ParserImplementation
       return nil
     end
 
-    token = eat('IDENTIFIER')
-    create_expression(token, type)
+    identifier = self.identifier
+    create_expression(identifier, type)
   end
 
   def parenthesized_argument(type)
@@ -152,8 +157,9 @@ module ParserImplementation
   end
 
   def multiple_arguments(type)
-    token = eat('IDENTIFIER')
-    expression = create_expression(token, type)
+    identifier = self.identifier
+    expression = create_expression(identifier, type)
+    p expression
     identifier = expression[:value]
     eat(',')
 
@@ -164,21 +170,43 @@ module ParserImplementation
     expression
   end
 
+  def keypairs_argument(type)
+    left = identifier
+    root = assign_operator
+    right = @lookahead[:type] == 'STRING' ? string_literal : numeric_literal
+    expression = create_expression(root, type)
+    expression[:value][:left] = left
+
+    p right
+
+    expression[:value][:right] =  right
+
+    #  left = create_node(eat('IDENTIFIER'),  Types::IDENTIFIER)
+    #  root_token = eat('ASSIGN')
+    #  expression = create_expression(root_token, type, Types::ASSIGN)
+    #  expression[:value][:left] = left
+    #  expression[:value][:right] = string_literal
+
+    #  expression[:value][:left][:left] = keypairs_argument(type) if !@lookahead.nil? && @lookahead == 'IDENTIFIER'
+    expression
+  end
+
   def parse_through_multiple_arguments(identifier)
     while @lookahead && @lookahead[:type] == 'IDENTIFIER'
-      token = eat('IDENTIFIER')
-      identifier[:left] = { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }
+      identifier[:left] = self.identifier
       identifier = identifier[:left]
 
       eat(',') if @lookahead && @lookahead[:type] == ','
     end
   end
 
-  def create_expression(token, type)
-    expression = expression_map(token, type)
+  def create_expression(value, type)
+    expression = { type: type, value: value, left: nil, right: nil }
+
     return expression if @lookahead[:type] == ';' || @lookahead[:type] == ','
 
     expression[:left] = self.expression
+
     expression
   end
 
@@ -188,9 +216,15 @@ module ParserImplementation
     { type: type, value: nil, left: expression, right: nil }
   end
 
-  def expression_map(token, type)
-    { type: type,
-      value: { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil },
-      left: nil, right: nil }
+  def eat(type)
+    token = @lookahead
+    unless token && token[:type] == type
+      puts "Unexpected end of input, expected: #{type}"
+      @error = true
+    end
+
+    @lookahead = @tokenizer.next_token
+
+    token
   end
 end
