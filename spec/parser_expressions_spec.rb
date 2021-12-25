@@ -259,6 +259,49 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
+it 'rejects SET expression with multiple arguments' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::SET,
+                        next: nil,
+                        value: { type: Types::ASSIGN,
+                                 value: '=',
+                                 right: { type: Types::STRING_LITERAL,
+                                          value: 'seven',
+                                          left: nil,
+                                          right: nil },
+                                 left: { type: Types::IDENTIFIER,
+                                         name: 'age',
+                                         left: {
+                                           type: Types::ASSIGN,
+                                           value: '=',
+                                           right: {
+                                             type: Types::NUMERIC_LITERAL,
+                                             value: 17,
+                                             left: nil,
+                                             right: nil
+                                           },
+                                           left: {
+                                             type: Types::IDENTIFIER,
+                                             name: 'time',
+                                             left: nil,
+                                             right: nil
+                                           }
+                                         },
+                                         right: nil } } }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse("SET age = 'seven', time = 17;")
+    expect(ast).to eq(compare)
+  end
+
+
   it 'rejects WHERE expression with follow up expression' do
     compare = {
       type: 'Program',
