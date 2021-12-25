@@ -2,22 +2,16 @@
 
 # Main test runner
 
-require 'json'
+require 'pp'
 require_relative '../src/parser'
 require_relative './literal_test'
 
+#program = 'INSERT INTO students VALUES (John, john@johndoe.com, A, https://blog.johndoe.com);'
+#program = 'W
+#HERE pedro = "line", dogs = "things"'
+program = 'INSERT INTO students VALUES (John, john@johndoe.com, A, https://blog.johndoe.com) ;'
+#program = "UPDATE pedro, cars, things, morons"
+parser = Parser.new
+ast = parser.parse(program)
 
-  # tests = LiteralTest.tests
-
-  # def execute
-  #  puts ast.to_json
-  # end
-
-      program = "WHERE pedro = 'hello', age = 'seven' ;"
-      parser = Parser.new
-      ast = parser.parse(program)
-
-      p ast
-
-
-# tests.each { |test_run| test_run.call(test) }
+pp ast

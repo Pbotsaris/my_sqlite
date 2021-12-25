@@ -38,13 +38,14 @@ class Tokenizer
     line = @line.slice(@cursor..@line.length).dup
 
     SPEC.each do |regex, type|
-      token_value = match regex, line
+      token_value = match(regex, line)
 
       next unless token_value
 
       return next_token if type.nil? # skip whitespaces & comments
 
-      @cursor+= 1 if type == 'STRING'
+      @cursor += 1 if type == 'STRING' # skip closing quotes and parenthesis
+      @cursor += 2 if type == 'PARAMS' # skip parenthesis
 
       return { type: type, value: token_value }
     end

@@ -3,7 +3,7 @@
 module TokenizerImplementation
   # private implementation for the Tokenizer class
   SPEC = [
-    [/^\(|^\)/, '()'],          # Parenthesis
+#    [/^\(|^\)/, '()'],          # Parenthesis
     [/^\s+/, nil],              # whitespace
     [/--.*/, nil],              # comments
     [/^\n/, nil],               # linebreak
@@ -23,14 +23,21 @@ module TokenizerImplementation
     [/^"[^"]*/, 'STRING'],
     [/^'[^']*/, 'STRING'],
     [/^=/, 'ASSIGN'],
-    [/\w+|\*/, 'IDENTIFIER']   # will also match the * wildcard
+    [/^\([^)]*/, 'PARAMS'], # index 16 see below
+    [/\w+|\*/, 'IDENTIFIER'] # will also match the * wildcard
   ].freeze
+
+  PARAMS_SPEC = SPEC[17][0].freeze
 
   def match(regex, line)
     matched = line.match(regex)
+
     return nil unless matched
 
-    @cursor += matched[0].length
-    matched[0]
+    matched_string = matched[0]
+    matched_string = regex == PARAMS_SPEC ? matched_string[1..-1] : matched_string # remove parenthesis from PARAMS
+
+    @cursor += matched_string.length
+    matched_string
   end
 end
