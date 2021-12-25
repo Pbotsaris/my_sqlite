@@ -43,7 +43,7 @@ class Tokenizer
       next unless token_value
       return next_token if type.nil? # skip whitespaces & comments
 
-      @cursor += 2 if type == 'PARAMS' # skip parenthesis
+      @cursor += 1 if type == 'STRING' # skip parenthesis
       @cursor += 2 if type == 'PARAMS' # skip parenthesis
 
       return { type: type, value: token_value }
