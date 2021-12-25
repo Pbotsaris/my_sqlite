@@ -10,8 +10,12 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::FROM,
-                        value: { type: Types::IDENTIFIER, name: 'books', left: nil, right: nil },
-                        left: nil, right: nil }
+                       next: nil,
+                        value: { type: Types::IDENTIFIER,
+                                 name: 'books',
+                                 left: nil,
+                                 right: nil },
+                         }
         }
       ]
     }
@@ -28,8 +32,12 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::INSERT,
-                        value: { type: Types::IDENTIFIER, name: 'table', left: nil, right: nil },
-                        left: nil, right: nil }
+                        next: nil,
+                        value: { type: Types::IDENTIFIER,
+                                 name: 'table',
+                                 left: nil,
+                                 right: nil },
+                        }
         }
       ]
     }
@@ -47,7 +55,8 @@ describe 'Parser Expressions' do
           type: Statement::EXPRESSION,
           expression: { type: Expression::DELETE,
                         value: nil,
-                        left: nil, right: nil }
+                        next: nil,
+                        }
         }
       ]
     }
@@ -84,8 +93,8 @@ describe 'Parser Expressions' do
                                  name: 'books',
                                  left: nil,
                                  right: nil },
-                        left: nil,
-                        right: nil }
+                        next: nil,
+                         }
         }
       ]
     }
@@ -106,8 +115,7 @@ describe 'Parser Expressions' do
                                  name: 'id',
                                  left: nil,
                                  right: nil },
-                        left: nil,
-                        right: nil }
+                        next: nil }
         }
       ]
 
@@ -126,14 +134,13 @@ describe 'Parser Expressions' do
           type: Statement::EXPRESSION,
           expression: { type: Expression::DELETE,
                         value: nil,
-                        left: { type: Expression::FROM,
+                        next: { type: Expression::FROM,
                                 value: { type: Types::IDENTIFIER,
                                          name: 'books',
                                          left: nil,
                                          right: nil },
-                                left: nil,
-                                right: nil },
-                        right: nil }
+                                next: nil }
+                         }
         }
       ]
     }
@@ -150,8 +157,7 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::SELECT,
-                        left: nil,
-                        right: nil,
+                        next: nil,
                         value: { type: Types::IDENTIFIER,
                                  name: 'id',
                                  right: nil,
@@ -175,8 +181,7 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::VALUES,
-                        left: nil,
-                        right: nil,
+                        next: nil,
                         value: { type: Types::IDENTIFIER,
                                  name: 'hello',
                                  right: nil,
@@ -200,8 +205,7 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::WHERE,
-                        left: nil,
-                        right: nil,
+                        next: nil,
                         value: { type: Types::ASSIGN,
                                  value: '=',
                                  right: { type: Types::STRING_LITERAL,
@@ -228,8 +232,7 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::WHERE,
-                        left: nil,
-                        right: nil,
+                        next: nil,
                         value: { type: Types::ASSIGN,
                                  value: '=',
                                  right: { type: Types::STRING_LITERAL,
@@ -271,14 +274,12 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::WHERE,
-                        left: { type: Expression::FROM,
-                                left: nil,
-                                right: nil,
+                        next: { type: Expression::FROM,
+                                next: nil,
                                 value: { type: Types::IDENTIFIER,
                                          name: 'table',
                                          left: nil,
                                          right: nil } },
-                        right: nil,
                         value: { type: Types::ASSIGN,
                                  value: '=',
                                  right: { type: Types::STRING_LITERAL,
@@ -309,8 +310,8 @@ describe 'Parser Expressions' do
 #                                            :right=>nil}},
 #                                            :left=>nil,
 #                                            :right=>nil}},
-#                                            {:type=>"ExpressionStatement",
 #                                             :expression=>nil},
+    #                                            {:type=>"ExpressionStatement",
 #                                             {:type=>"ExpressionStatement",
 #                                              :expression=>{:type=>"StringLiteral", :value=>"seven", :left=>nil, :right=>nil}}]}
 
@@ -327,10 +328,8 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::SELECT,
-                        right: nil,
-                        left: { type: Expression::FROM,
-                                right: nil,
-                                left: nil,
+                        next: { type: Expression::FROM,
+                                next: nil,
                                 value: { type: Types::IDENTIFIER,
                                          name: 'table',
                                          right: nil,
