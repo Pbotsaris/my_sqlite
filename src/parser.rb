@@ -44,7 +44,7 @@ class Tokenizer
 
       return next_token if type.nil? # skip whitespaces & comments
 
-      @cursor+= 2 if type == 'STRING'
+      @cursor+= 1 if type == 'STRING'
 
       return { type: type, value: token_value }
     end

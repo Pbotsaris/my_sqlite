@@ -217,7 +217,106 @@ describe 'Parser Expressions' do
     }
 
     parser = Parser.new
-    ast = parser.parse("WHERE age = 'seven' ;")
+    ast = parser.parse("WHERE age = 'seven';")
+    expect(ast).to eq(compare)
+  end
+
+  it 'rejects WHERE expression with multiple arguments' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::WHERE,
+                        left: nil,
+                        right: nil,
+                        value: { type: Types::ASSIGN,
+                                 value: '=',
+                                 right: { type: Types::STRING_LITERAL,
+                                          value: 'seven',
+                                          left: nil,
+                                          right: nil },
+                                 left: { type: Types::IDENTIFIER,
+                                         name: 'age',
+                                         left: {
+                                           type: Types::ASSIGN,
+                                           value: '=',
+                                           right: {
+                                             type: Types::STRING_LITERAL,
+                                             value: 'noon',
+                                             left: nil,
+                                             right: nil
+                                           },
+                                           left: {
+                                             type: Types::IDENTIFIER,
+                                             name: 'time',
+                                             left: nil,
+                                             right: nil
+                                           }
+                                         },
+                                         right: nil } } }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse("WHERE age = 'seven', time = 'noon';")
+    expect(ast).to eq(compare)
+  end
+
+  it 'rejects WHERE expression with follow up expression' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: { type: Expression::WHERE,
+                        left: { type: Expression::FROM,
+                                left: nil,
+                                right: nil,
+                                value: { type: Types::IDENTIFIER,
+                                         name: 'table',
+                                         left: nil,
+                                         right: nil } },
+                        right: nil,
+                        value: { type: Types::ASSIGN,
+                                 value: '=',
+                                 right: { type: Types::STRING_LITERAL,
+                                          value: 'seven',
+                                          left: nil,
+                                          right: nil },
+                                 left: { type: Types::IDENTIFIER,
+                                         name: 'age',
+                                         left: nil,
+                                         right: nil } } }
+        }
+      ]
+    }
+
+#{:type=>"Program",
+# :body=>[
+#   {:type=>"ExpressionStatement",
+#    :expression=>{:type=>"WhereExpression",
+#                  :value=>{:type=>"Assign", 
+#                           :value=>"=", 
+#                           :left=>{:type=>"Identifier",
+#                                   :name=>"pedro",
+#                                   :left=>nil,
+#                                   :right=>nil},
+#                                   :right=>{:type=>"StringLiteral",
+#                                            :value=>"hello",
+#                                            :left=>nil,
+#                                            :right=>nil}},
+#                                            :left=>nil,
+#                                            :right=>nil}},
+#                                            {:type=>"ExpressionStatement",
+#                                             :expression=>nil},
+#                                             {:type=>"ExpressionStatement",
+#                                              :expression=>{:type=>"StringLiteral", :value=>"seven", :left=>nil, :right=>nil}}]}
+
+
+    parser = Parser.new
+    ast = parser.parse("WHERE age = 'seven' FROM table ;")
     expect(ast).to eq(compare)
   end
 
