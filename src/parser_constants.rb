@@ -19,6 +19,7 @@ module ParserConstants
 
   module Types
     IDENTIFIER = 'Identifier'
+    PARAMS = 'Params'
     ASSIGN = 'Assign'
     NUMERIC_LITERAL = 'NumericLiteral'
     STRING_LITERAL = 'StringLiteral'

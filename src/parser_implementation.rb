@@ -89,71 +89,48 @@ module ParserImplementation
 
   def values_expression
     eat('VALUES')
-    eat('()')
     arguments(Expression::VALUES)
   end
 
   def where_expression
     eat('WHERE')
-    keypairs_argument(Expression::WHERE)
-  end
-
-  def literal
-    case @lookahead[:type]
-    when 'NUMBER'
-      numeric_literal
-    when 'STRING'
-      string_literal
-    else
-      puts 'Unexpected literal'
-      @error = true
-      nil
-    end
+    arguments(Expression::WHERE)
   end
 
   def arguments(type)
-    return nil unless @lookahead && @lookahead[:type] == 'IDENTIFIER'
+    return nil unless identifier_or_params?
 
-    identifier = self.identifier
-    expression = create_expression(identifier, type)
+    root = identifier? ? identifier : params
 
-    handle_multiple_arguments(identifier) if @lookahead[:type] == ','
+    root = create_keypair root if assign? # check for key=pair arguments
 
-    eat('()') if @lookahead[:type] == '()'
-    expression[:next] = self.expression unless @lookahead.nil? || @lookahead == ';'
-
-    expression
-  end
-
-  def keypairs_argument(type)
-    root = create_keypair(identifier)
     expression = create_expression(root, type)
 
-    handle_multiple_keypairs(root) if @lookahead[:type] == ','
+    handle_multiple_arguments(root) if @lookahead[:type] == ','
 
     expression[:next] = self.expression unless @lookahead.nil? || @lookahead == ';'
 
     expression
   end
 
-  def handle_multiple_arguments(identifier)
+  def handle_multiple_arguments(root)
     eat(',')
-    while @lookahead && @lookahead[:type] == 'IDENTIFIER'
-      identifier[:left] = self.identifier
-      identifier = identifier[:left]
+    while identifier_or_params?
+      root = add_to_left(root)
 
       eat(',') if @lookahead && @lookahead[:type] == ','
     end
   end
 
-  def handle_multiple_keypairs(root)
-    eat(',')
-    while @lookahead && @lookahead[:type] == 'IDENTIFIER'
-      root[:left][:left] = create_keypair(identifier)
-      root = root[:left]
+  def add_to_left(root)
+    left = identifier
 
-      eat(',') if @lookahead && @lookahead[:type] == ','
+    if assign?
+      root[:left][:left] = create_keypair(left)
+    else
+      root[:left] = left
     end
+    root[:left]
   end
 
   def create_keypair(left)
@@ -174,6 +151,19 @@ module ParserImplementation
     { type: type, value: nil, next: expression }
   end
 
+  def literal
+    case @lookahead[:type]
+    when 'NUMBER'
+      numeric_literal
+    when 'STRING'
+      string_literal
+    else
+      puts 'Unexpected literal'
+      @error = true
+      nil
+    end
+  end
+
   def string_literal
     token = eat('STRING')
     len = token[:value].length
@@ -190,6 +180,13 @@ module ParserImplementation
     { type: Types::IDENTIFIER, name: token[:value], left: nil, right: nil }
   end
 
+  def params
+    token = eat('PARAMS')
+    values = token[:value].split(',').map(&:strip)
+
+    { type: Types::PARAMS, value: values, left: nil, right: nil }
+  end
+
   def assign_operator
     token = eat('ASSIGN')
     { type: Types::ASSIGN, value: token[:value], left: nil, right: nil }
@@ -204,5 +201,17 @@ module ParserImplementation
     @lookahead = @tokenizer.next_token
 
     token
+  end
+
+  def identifier_or_params?
+    @lookahead && (@lookahead[:type] == 'IDENTIFIER' || @lookahead[:type] == 'PARAMS')
+  end
+
+  def identifier?
+    @lookahead && @lookahead[:type] == 'IDENTIFIER'
+  end
+
+  def assign?
+    @lookahead && @lookahead[:type] == 'ASSIGN'
   end
 end

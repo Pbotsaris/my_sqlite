@@ -10,12 +10,11 @@ describe 'Parser Expressions' do
         {
           type: Statement::EXPRESSION,
           expression: { type: Expression::FROM,
-                       next: nil,
+                        next: nil,
                         value: { type: Types::IDENTIFIER,
                                  name: 'books',
                                  left: nil,
-                                 right: nil },
-                         }
+                                 right: nil } }
         }
       ]
     }
@@ -36,8 +35,7 @@ describe 'Parser Expressions' do
                         value: { type: Types::IDENTIFIER,
                                  name: 'table',
                                  left: nil,
-                                 right: nil },
-                        }
+                                 right: nil } }
         }
       ]
     }
@@ -55,8 +53,7 @@ describe 'Parser Expressions' do
           type: Statement::EXPRESSION,
           expression: { type: Expression::DELETE,
                         value: nil,
-                        next: nil,
-                        }
+                        next: nil }
         }
       ]
     }
@@ -93,8 +90,7 @@ describe 'Parser Expressions' do
                                  name: 'books',
                                  left: nil,
                                  right: nil },
-                        next: nil,
-                         }
+                        next: nil }
         }
       ]
     }
@@ -139,8 +135,7 @@ describe 'Parser Expressions' do
                                          name: 'books',
                                          left: nil,
                                          right: nil },
-                                next: nil }
-                         }
+                                next: nil } }
         }
       ]
     }
@@ -182,13 +177,10 @@ describe 'Parser Expressions' do
           type: Statement::EXPRESSION,
           expression: { type: Expression::VALUES,
                         next: nil,
-                        value: { type: Types::IDENTIFIER,
-                                 name: 'hello',
+                        value: { type: Types::PARAMS,
+                                 value: ['hello', 'world'],
                                  right: nil,
-                                 left: { type: Types::IDENTIFIER,
-                                         name: 'world',
-                                         left: nil,
-                                         right: nil } } }
+                                 left: nil } }
         }
       ]
     }
@@ -294,28 +286,6 @@ describe 'Parser Expressions' do
       ]
     }
 
-#{:type=>"Program",
-# :body=>[
-#   {:type=>"ExpressionStatement",
-#    :expression=>{:type=>"WhereExpression",
-#                  :value=>{:type=>"Assign", 
-#                           :value=>"=", 
-#                           :left=>{:type=>"Identifier",
-#                                   :name=>"pedro",
-#                                   :left=>nil,
-#                                   :right=>nil},
-#                                   :right=>{:type=>"StringLiteral",
-#                                            :value=>"hello",
-#                                            :left=>nil,
-#                                            :right=>nil}},
-#                                            :left=>nil,
-#                                            :right=>nil}},
-#                                             :expression=>nil},
-    #                                            {:type=>"ExpressionStatement",
-#                                             {:type=>"ExpressionStatement",
-#                                              :expression=>{:type=>"StringLiteral", :value=>"seven", :left=>nil, :right=>nil}}]}
-
-
     parser = Parser.new
     ast = parser.parse("WHERE age = 'seven' FROM table ;")
     expect(ast).to eq(compare)
@@ -349,23 +319,4 @@ describe 'Parser Expressions' do
     ast = parser.parse('SELECT id, name FROM table ;')
     expect(ast).to eq(compare)
   end
-
-  #  it 'rejects single line commend' do
-  #    compare = {
-  #      type: 'Program',
-  #      body: [
-  #        {
-  #          type: 'ExpressionStatement',
-  #          expression: { type: 'AssignementExpression',
-  #                        operator: '=',
-  #                        left: { type: 'Identifier', name: 'x' },
-  #                        right: { type: 'NumericLiteral', value: 32 } }
-  #        }
-  #      ]
-  #    }
-  #
-  #    parser = Parser.new
-  #    ast = parser.parse('x = 32;')
-  #    expect(ast).to eq(compare)
-  #  end
 end
