@@ -55,6 +55,8 @@ module ParserImplementation
       values_expression
     when 'WHERE'
       where_expression
+    when 'SET'
+      set_expression
     when 'NUMBER'
       literal
     when 'STRING'
@@ -95,6 +97,11 @@ module ParserImplementation
   def where_expression
     eat('WHERE')
     arguments(Expression::WHERE)
+  end
+
+  def set_expression
+    eat('SET')
+    arguments(Expression::SET)
   end
 
   def arguments(type)

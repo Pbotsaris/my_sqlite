@@ -10,6 +10,7 @@ module ParserConstants
     DELETE = 'DeleteExpression'
     VALUES = 'ValuesExpression'
     WHERE = 'WhereExpression'
+    SET = 'SetExpression'
   end
 
   module Statement

@@ -3,7 +3,7 @@
 require_relative './parser_implementation'
 require_relative './tokenizer_implementation'
 
-# parser class
+# Parser class
 class Parser
   include ParserImplementation
 
@@ -21,7 +21,7 @@ class Parser
   end
 end
 
-# a class
+# Tokenizer class
 class Tokenizer
   include TokenizerImplementation
   def initialize
@@ -41,16 +41,15 @@ class Tokenizer
       token_value = match(regex, line)
 
       next unless token_value
-
       return next_token if type.nil? # skip whitespaces & comments
 
-      @cursor += 1 if type == 'STRING' # skip closing quotes and parenthesis
+      @cursor += 2 if type == 'PARAMS' # skip parenthesis
       @cursor += 2 if type == 'PARAMS' # skip parenthesis
 
       return { type: type, value: token_value }
     end
 
-    puts "Unexpected token #{line}"
+    p "Unexpected token #{line}"
     nil
   end
 end
