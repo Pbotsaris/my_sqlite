@@ -73,7 +73,8 @@ describe 'Parser Literals' do
           expression: { type: Types::STRING_LITERAL,
                         value: 'hello world',
                         left: nil,
-                        right: nil }
+                        right: nil
+          }
         }
       ]
     }
@@ -92,7 +93,8 @@ describe 'Parser Literals' do
           expression: { type: Types::STRING_LITERAL,
                         value: 'hello world',
                         left: nil,
-                        right: nil }
+                        right: nil
+          }
         }
       ]
     }
@@ -113,7 +115,8 @@ describe 'Parser Literals' do
           expression: { type: Types::STRING_LITERAL,
                         value: 'hello world',
                         left: nil,
-                        right: nil }
+                        right: nil
+          }
         }
       ]
 
@@ -137,14 +140,16 @@ describe 'Parser Literals' do
           expression: { type: Types::NUMERIC_LITERAL,
                         value: 42,
                         left: nil,
-                        right: nil }
+                        right: nil
+          }
         },
         {
           type: Statement::EXPRESSION,
           expression: { type: Types::STRING_LITERAL,
                         value: 'hello',
                         left: nil,
-                        right: nil }
+                        right: nil
+          }
         }
       ]
     }

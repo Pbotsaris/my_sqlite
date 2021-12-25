@@ -33,7 +33,7 @@ module ParserImplementation
 
   def expression_statement
     expression = self.expression
-    
+
     eat(';')
 
     { type: Statement::EXPRESSION, expression: expression }
@@ -55,7 +55,7 @@ module ParserImplementation
       values_expression
     when 'WHERE'
       where_expression
-    when 'NUMBER' 
+    when 'NUMBER'
       literal
     when 'STRING'
       literal
@@ -120,7 +120,7 @@ module ParserImplementation
     handle_multiple_arguments(identifier) if @lookahead[:type] == ','
 
     eat('()') if @lookahead[:type] == '()'
-    expression[:left] = self.expression unless @lookahead.nil? || @lookahead == ';'
+    expression[:next] = self.expression unless @lookahead.nil? || @lookahead == ';'
 
     expression
   end
@@ -128,10 +128,10 @@ module ParserImplementation
   def keypairs_argument(type)
     root = create_keypair(identifier)
     expression = create_expression(root, type)
-    
+
     handle_multiple_keypairs(root) if @lookahead[:type] == ','
 
-    expression[:left] = self.expression unless @lookahead.nil? || @lookahead == ';'
+    expression[:next] = self.expression unless @lookahead.nil? || @lookahead == ';'
 
     expression
   end
@@ -154,8 +154,6 @@ module ParserImplementation
 
       eat(',') if @lookahead && @lookahead[:type] == ','
     end
-
-
   end
 
   def create_keypair(left)
@@ -167,13 +165,13 @@ module ParserImplementation
   end
 
   def create_expression(value, type)
-    { type: type, value: value, left: nil, right: nil }
+    { type: type, value: value, next: nil }
   end
 
   def create_expression_without_arguments(type)
-    return { type: type, value: nil, left: nil, right: nil } if @lookahead[:type] == ';'
+    return { type: type, value: nil, next: nil } if @lookahead[:type] == ';'
 
-    { type: type, value: nil, left: expression, right: nil }
+    { type: type, value: nil, next: expression }
   end
 
   def string_literal
@@ -203,7 +201,6 @@ module ParserImplementation
       puts "Unexpected end of input, expected: #{type}"
       @error = true
     end
-
     @lookahead = @tokenizer.next_token
 
     token
