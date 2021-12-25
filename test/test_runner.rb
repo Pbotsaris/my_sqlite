@@ -13,7 +13,7 @@ require_relative './literal_test'
   #  puts ast.to_json
   # end
 
-      program = "WHERE pedro = 'hello' ;"
+      program = "WHERE pedro = 'hello', age = 'seven' ;"
       parser = Parser.new
       ast = parser.parse(program)
 
