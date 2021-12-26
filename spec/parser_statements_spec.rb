@@ -71,7 +71,7 @@ describe 'Parser Statements' do
                       right: nil,
                       left: nil
                     },
-                   right: {
+                    right: {
                       type: Types::STRING_LITERAL,
                       value: 'https://blog.janedoe.com',
                       left: nil,
@@ -85,7 +85,6 @@ describe 'Parser Statements' do
                   left: nil,
                   right: nil
                 }
-
               },
               next: {
                 type: Expression::WHERE,
@@ -115,6 +114,55 @@ describe 'Parser Statements' do
 
     parser = Parser.new
     ast = parser.parse("UPDATE students SET email = 'jane@janedoe.com', blog = 'https://blog.janedoe.com' WHERE name = 'Jane';")
+
+    expect(ast).to eq(compare)
+  end
+
+  it 'rejects statement with INSERT and VALUES' do
+    compare = {
+      type: 'Program',
+      body: [
+        {
+          type: Statement::EXPRESSION,
+          expression: {
+            type: Expression::SELECT,
+            value: {
+              type: Types::IDENTIFIER,
+              name: '*',
+              left: nil,
+              right: nil
+            },
+            next: nil
+          }
+        },
+        {
+          type: Statement::EXPRESSION,
+          expression: {
+            type: Expression::WHERE,
+            value: {
+              type: Types::ASSIGN,
+              value: '=',
+              left: {
+                type: Types::IDENTIFIER,
+                name: 'age',
+                left: nil,
+                right: nil
+              },
+              right: {
+                type: Types::NUMERIC_LITERAL,
+                value: 17,
+                right: nil,
+                left: nil
+              }
+            },
+            next: nil
+          }
+        }
+      ]
+    }
+
+    parser = Parser.new
+    ast = parser.parse('SELECT *; WHERE age=17;')
 
     expect(ast).to eq(compare)
   end

@@ -33,7 +33,6 @@ module ParserImplementation
 
   def expression_statement
     expression = self.expression
-
     eat(';')
 
     { type: Statement::EXPRESSION, expression: expression }
@@ -113,9 +112,9 @@ module ParserImplementation
 
     expression = create_expression(root, type)
 
-    handle_multiple_arguments(root) if @lookahead[:type] == ','
+    handle_multiple_arguments(root) if multiple_arguments?
 
-    expression[:next] = self.expression unless @lookahead.nil? || @lookahead == ';'
+    expression[:next] = self.expression unless end_of_statement?
 
     expression
   end
@@ -125,7 +124,7 @@ module ParserImplementation
     while identifier_or_params?
       root = add_to_left(root)
 
-      eat(',') if @lookahead && @lookahead[:type] == ','
+      eat(',') if multiple_arguments?
     end
   end
 
@@ -137,6 +136,7 @@ module ParserImplementation
     else
       root[:left] = left
     end
+
     root[:left]
   end
 
@@ -165,8 +165,7 @@ module ParserImplementation
     when 'STRING'
       string_literal
     else
-      puts 'Unexpected literal'
-      @error = true
+      @error = "Unexpected literal: #{@lookahead[:type]}"
       nil
     end
   end
@@ -201,10 +200,7 @@ module ParserImplementation
 
   def eat(type)
     token = @lookahead
-    unless token && token[:type] == type
-      puts "Unexpected end of input, expected: #{type}"
-      @error = true
-    end
+    @error = " Unexpected end of input #{token[:type]}. expected:#{type}" unless token && token[:type] == type
     @lookahead = @tokenizer.next_token
 
     token
@@ -220,5 +216,13 @@ module ParserImplementation
 
   def assign?
     @lookahead && @lookahead[:type] == 'ASSIGN'
+  end
+
+  def multiple_arguments?
+    @lookahead && @lookahead[:type] == ','
+  end
+
+  def end_of_statement?
+    @lookahead.nil? || @lookahead == ';'
   end
 end
