@@ -3,9 +3,11 @@
 A naive implementation of the SQlite.
 
 
-# Parser
+## Parser
 
-The program provides basic parsing of the following SQL clauses `UPDATE`, `INSERT`, `WHERE`, `VALUES`, `SET`, `FROM`, `DELETE`. The parser is capable of handling multiple statements as well as comments. Below and example of the AST schema:
+The program provides basic parsing of the following SQL clauses `UPDATE`, `INSERT`, `WHERE`, `VALUES`, `SET`, `FROM`, `DELETE`. The parser is capable of handling multiple statements as well as comments.
+
+### Example of the AST schema:
 
 ```
 ast = Parser.new.parse('INSERT INTO students VALUES (John, john@johndoe.com, A, https://blog.johndoe.com) ;')
@@ -39,7 +41,7 @@ p ast
 }
 ```
 
-Example with key=pair clause arguments:
+### With `key = pair` clause arguments:
 
 ```
 ast = Parser.new.parse("WHERE age = 'seven', time = 'noon';")
@@ -88,7 +90,7 @@ p ast
     }
 ```
 
-Empty statements:
+### Empty statements:
  
  ```
 ast = Parser.new.parse(';')
@@ -105,7 +107,7 @@ p ast
 }
  ```
 
- Multiple statements:
+### Multiple statements:
 
 ```
 ast = Parser.new.parse('42; "hello";')
@@ -134,7 +136,7 @@ p ast
 }
 ```
 
-Comments:
+### Comments:
 
 ```
 ast = Parser.new.parse("
@@ -156,12 +158,7 @@ p ast
   ]
 
 }
-
-
-
 ```
-
-
 
 ## Intalling gems
 
