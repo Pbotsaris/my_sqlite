@@ -9,7 +9,7 @@ A naive implementation of the SQlite.
 
 ## Parser
 
-The program provides basic parsing of the following SQL clauses `UPDATE`, `INSERT`, `WHERE`, `VALUES`, `SET`, `FROM`, `DELETE`. The parser is capable of handling multiple statements as well as comments.
+The program provides basic parsing for the following SQL clauses `UPDATE`, `INSERT`, `WHERE`, `VALUES`, `SET`, `FROM`, `DELETE`. The parser is capable of handling multiple statements as well as comments.
 
 ### Example of the AST schema:
 
@@ -164,7 +164,7 @@ p ast
 }
 ```
 
-## Intalling gems
+## Installing gems
 
 First, make sure you have ruby installed. Refer to this [link](https://www.ruby-lang.org/en/documentation/installation/) for more information.
 
