@@ -2,8 +2,7 @@
 
 require 'readline'
 
-
-"random thing"
+"another random thing"
 
 # a class
 class SQlite
