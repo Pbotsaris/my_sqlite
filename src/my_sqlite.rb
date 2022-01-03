@@ -2,6 +2,8 @@
 
 require 'readline'
 
+"another random thing"
+
 # a class
 class SQlite
   def run
