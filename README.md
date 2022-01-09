@@ -120,8 +120,8 @@ p ast
       type: 'ExpressionStatement',
       expression: { type: 'Numericliteral',
                     value: 42,
-                    left: nil,
                     right: nil
+                      left: nil,
       }
     },
     {
