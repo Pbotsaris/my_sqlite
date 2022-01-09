@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# my-sqlite
-
 =======
 # My SQLite
 
@@ -198,5 +195,5 @@ describe 'A describing this group of tests' do
 end
 
 ```
+
 more information on rspec [here](https://rspec.info/).
->>>>>>> 210b8e6 (Added readme)
