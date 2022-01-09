@@ -1,19 +1,17 @@
 # frozen_string_literal: true
-
-require 'pp'
-
 module Constants
   OFFSET = 32
   ASCII_MAX = 128
   MAX_CHARS = Constants::ASCII_MAX - Constants::OFFSET
 end
 
-# a node
+# trie node
 class Node
   include Constants
 
   attr_accessor :is_word, :id, :word
   attr_reader :value, :next
+  alias is_word? is_word
 
   def initialize(id)
     @next = create_next
@@ -28,7 +26,7 @@ class Node
   end
 end
 
-# a Trie
+# a Trie to search words
 class Trie
   include Constants
   def initialize
@@ -80,17 +78,3 @@ class Trie
     node.word = word
   end
 end
-
-trie = Trie.new
-
-# trie.insert('pedro')
-trie.insert(1, 'jose')
-trie.insert(2, 'jose')
-node = trie.find('jose')
-p node.word, node.id unless node.nil?
-
-
-#  id              name                age
-#
-#   [id_trie, name_trie, age_trie]
-#   { columns: [trie], entries: [ {id: 1}] }
