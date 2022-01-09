@@ -178,7 +178,7 @@ describe 'Parser Expressions' do
           expression: { type: Expression::VALUES,
                         next: nil,
                         value: { type: Types::PARAMS,
-                                 value: ['hello', 'world'],
+                                 value: %w[hello world],
                                  right: nil,
                                  left: nil } }
         }
@@ -218,6 +218,7 @@ describe 'Parser Expressions' do
   end
 
   it 'rejects WHERE expression with multiple arguments' do
+    
     compare = {
       type: 'Program',
       body: [
@@ -259,7 +260,7 @@ describe 'Parser Expressions' do
     expect(ast).to eq(compare)
   end
 
-it 'rejects SET expression with multiple arguments' do
+  it 'rejects SET expression with multiple arguments' do
     compare = {
       type: 'Program',
       body: [
@@ -300,7 +301,6 @@ it 'rejects SET expression with multiple arguments' do
     ast = parser.parse("SET age = 'seven', time = 17;")
     expect(ast).to eq(compare)
   end
-
 
   it 'rejects WHERE expression with follow up expression' do
     compare = {
