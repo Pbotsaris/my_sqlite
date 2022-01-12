@@ -49,6 +49,8 @@ class Trie
   end
 
   def insert(id, word)
+    return if word.nil?
+
     charlist = word.split('')
     current = @root
 
