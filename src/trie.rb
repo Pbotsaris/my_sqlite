@@ -29,6 +29,9 @@ end
 # a Trie to search words
 class Trie
   include Constants
+
+  attr_accessor :root
+
   def initialize
     @root = Node.new('a')
   end
@@ -80,3 +83,15 @@ class Trie
     node.word = word
   end
 end
+#
+#file = File.read('data/nba_player_data.csv')
+#data = CSV.parse file, headers: true
+#trie = Trie.new
+#
+#data.each do |row|
+#   
+#  
+#
+#end
+#
+

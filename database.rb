@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'csv'
 require_relative './trie'
 
-# table class
+#  Indexes class uses a Trie data structure to keep the indexes of each columns
+#  Indexes are stored in memory for quick access when a database and tables classes are instantiated.
 class Indexes
   def load(path, headers)
     file = File.read path
@@ -12,7 +15,7 @@ class Indexes
 
   def find(column, name)
     found = instance_variable_get("@#{column}").find name
-    found.id
+    found&.id
   end
 
   private
@@ -32,7 +35,9 @@ class Indexes
   end
 end
 
-# Table class
+# The table class represents a table in the database.
+# You can search, read, write and update a given table using this class
+# Tables are read, written and persisted from/to disk. (data directory)
 class Table
   attr_reader :headers
 
@@ -44,6 +49,8 @@ class Table
   end
 
   def where(column, term)
+    return nil unless @headers.include? column
+
     indexes = @indexes.find(column, term).map(&:to_i)
     _read indexes.sort
   end
@@ -59,11 +66,12 @@ class Table
 
   def _find_lines(file, indexes)
     prev = 0
+    # skipping header
+    file.gets
     lines = []
 
     indexes.each do |index|
-      # +1 skips headers
-      (index - prev + 1).times { file.gets }
+      (index - (prev + 1)).times { file.gets }
 
       lines << file.gets
       prev = index
@@ -77,11 +85,36 @@ class Table
   end
 end
 
-# CSV reader
+# The Database class consists of a collection of tables.
+# the database tables paths are persisted to the data/db_name.db
 class Database
+  def initialize(path)
+    table_files = _parse_keypairs(path)
+    _load_tables(table_files)
+  end
+
+  def list_table
+    instance_variables
+  end
+
+  private
+
+  def _load_tables(table_files)
+    table_files.each do |table_file|
+      singleton_class.class_eval { attr_accessor table_file[:name] }
+      send("#{table_file[:name]}=", Table.new(table_file[:path]))
+    end
+  end
+
+  def _parse_keypairs(path)
+    table_keypairs = File.read(path).split(/\n/)
+    table_keypairs.map do |table_keypair|
+      table_name, table_path = table_keypair.split('=')
+      { name: table_name, path: table_path }
+    end
+  end
 end
 
-nba_players = Table.new './data/nba_players.csv'
-p nba_players.where('Player', 'Cliff Barker')
-# p table.find('Player', 'Cliff Barker')
-# p table.column_names
+db = Database.new 'data/nba.db'
+p db.player.where('weight', '79')
+
