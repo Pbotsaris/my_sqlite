@@ -11,6 +11,8 @@ class Indexes
     data = CSV.parse file, headers: true
     _set_columns(headers)
     _read_column(data, headers)
+    # resturns row count
+    data.length
   end
 
   def find(column, name)
@@ -45,7 +47,7 @@ class Table
     @path = path
     @headers = _load_headers path
     @indexes = Indexes.new
-    @indexes.load @path, @headers
+    @next_row = @indexes.load @path, @headers
   end
 
   def where(column, term)
@@ -58,6 +60,14 @@ class Table
     indexes = indexes.map(&:to_i)
 
     _read indexes.sort
+  end
+
+  def append(row)
+    row.prepend @next_row
+    @next_row += 1
+    CSV.open(@path, 'ab') do |csv|
+      csv << row
+    end
   end
 
   private
@@ -106,6 +116,7 @@ class Database
 
   def _load_tables(table_files)
     table_files.each do |table_file|
+      # using singletooon_class to make attrib avail with attr_accessor
       singleton_class.class_eval { attr_accessor table_file[:name] }
       send("#{table_file[:name]}=", Table.new(table_file[:path]))
     end

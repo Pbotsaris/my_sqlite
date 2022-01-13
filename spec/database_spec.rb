@@ -33,4 +33,13 @@ describe 'database' do
     result = db.player_test.where('Player', 'Maradonna')
     expect(result).to eq(nil)
   end
+
+  it 'rejects query appending row to table' do
+    db = Database.new 'data/nba_test.db'
+    row = ['Pedro Botsaris', '66', '66', 'MIT', '1927', 'Sophia', 'New Mexico']
+    db.player_test.append(row)
+    data = CSV.parse(File.read('data/nba_players_test.csv'), headers: false)
+    row[0] = row[0].to_s
+    expect(data.last).to eq(row)
+  end
 end
