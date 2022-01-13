@@ -51,7 +51,12 @@ class Table
   def where(column, term)
     return nil unless @headers.include? column
 
-    indexes = @indexes.find(column, term).map(&:to_i)
+    indexes = @indexes.find(column, term)
+
+    return nil if indexes.nil?
+
+    indexes = indexes.map(&:to_i)
+
     _read indexes.sort
   end
 
@@ -71,10 +76,10 @@ class Table
     lines = []
 
     indexes.each do |index|
-      (index - (prev + 1)).times { file.gets }
+      (index - prev).times { file.gets }
 
       lines << file.gets
-      prev = index
+      prev = index + 1
     end
     lines
   end
@@ -114,7 +119,3 @@ class Database
     end
   end
 end
-
-db = Database.new 'data/nba.db'
-p db.player.where('weight', '79')
-
