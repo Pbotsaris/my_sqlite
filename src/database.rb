@@ -6,11 +6,11 @@ require_relative './trie'
 #  Indexes class uses a Trie data structure to keep the indexes of each columns
 #  Indexes are stored in memory for quick access when a database and tables classes are instantiated.
 class Indexes
-  def load(path, headers)
+  def load(path, columns)
     file = File.read path
     data = CSV.parse file, headers: true
-    _set_columns(headers)
-    _read_column(data, headers)
+    _set_columns(columns)
+    _read_column(data, columns)
     # resturns row count
     data.length
   end
@@ -20,19 +20,39 @@ class Indexes
     found&.id
   end
 
-  private
+  def insert_one(row, column)
+    id = row[0]
+    word = row[column]
+    instance_variable_get("@#{column}").insert(id, word)
+  end
 
-  def _read_column(data, headers)
-    data.each do |row|
-      headers.each do |header|
-        instance_variable_get("@#{header}").insert(row[0], row[header]) unless header.nil?
+  def delete(row, column)
+    id = row[0]
+    word = row[column]
+    instance_variable_get("@#{column}").delete(id, word)
+  end
+
+  def insert(row, columns)
+    0.upto(columns.length - 1) do |column_index|
+      unless columns[column_index].nil?
+        instance_variable_get("@#{columns[column_index]}").insert(row[0].to_s, row[column_index + 1])
       end
     end
   end
 
-  def _set_columns(headers)
-    headers.each do |header|
-      instance_variable_set("@#{header}", Trie.new) unless header.nil?
+  private
+
+  def _read_column(data, columns)
+    data.each do |row|
+      columns.each do |column|
+        instance_variable_get("@#{column}").insert(row[0], row[column]) unless column.nil?
+      end
+    end
+  end
+
+  def _set_columns(columns)
+    columns.each do |column|
+      instance_variable_set("@#{column}", Trie.new) unless column.nil?
     end
   end
 end
@@ -50,7 +70,8 @@ class Table
     @next_row = @indexes.load @path, @headers
   end
 
-  def where(column, term)
+  # Finds database rows according search term in a column
+  def find(column, term)
     return nil unless @headers.include? column
 
     indexes = @indexes.find(column, term)
@@ -62,15 +83,51 @@ class Table
     _read indexes.sort
   end
 
+  # Appends a new row to the end of the table incrementing the primary key
   def append(row)
     row.prepend @next_row
     @next_row += 1
-    CSV.open(@path, 'ab') do |csv|
-      csv << row
+    CSV.open(@path, 'ab') do |output|
+      output << row
     end
+    @indexes.insert(row, @headers)
+  end
+
+  # Update accepts array with hashes as objects
+  # update: [{column: 'Player' , value: 'Pedro' }, #{column: 'birth_state', value: 'indiana' }]
+  # where:  {column: 'Player', term: 'Bob Evans'}
+  def update(to_update, where)
+    indexes = @indexes.find(where[:column], where[:term])
+    return nil if indexes.nil?
+
+    _update_rows(to_update, indexes)
   end
 
   private
+
+  def _update_rows(to_update, indexes)
+    headers = @headers.clone.prepend(nil)
+
+    data = CSV.parse(File.read(@path), headers: true)
+    CSV.open(@path, 'w', write_headers: true, headers: headers) do |output|
+      data.each do |row|
+        _update_columns(row, to_update) if indexes.include?(row[0])
+
+        output << row
+      end
+    end
+  end
+
+  def _update_columns(row, to_update)
+    to_update.each do |column|
+      column_name, value = column.values
+
+      # also updates indexes
+      @indexes.delete(row, column_name)
+      row[column_name] = value
+      @indexes.insert_one(row, column_name)
+    end
+  end
 
   def _read(indexes)
     file = File.open(@path)
