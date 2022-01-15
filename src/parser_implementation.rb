@@ -133,6 +133,7 @@ module ParserImplementation
 
     if assign?
       root[:left][:left] = create_keypair(left)
+      return root[:left][:left]
     else
       root[:left] = left
     end
