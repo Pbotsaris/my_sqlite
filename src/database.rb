@@ -15,7 +15,7 @@ class Indexes
     data.length
   end
 
-  def find(column, name)
+  def find(name, column)
     found = instance_variable_get("@#{column}").find name
     found&.id
   end
@@ -30,6 +30,10 @@ class Indexes
     id = row[0]
     word = row[column]
     instance_variable_get("@#{column}").delete(id, word)
+  end
+
+  def delete_all(word, column)
+    instance_variable_get("@#{column}").delete_all(word)
   end
 
   def insert(row, columns)
@@ -74,7 +78,7 @@ class Table
   def find(column, term)
     return nil unless @headers.include? column
 
-    indexes = @indexes.find(column, term)
+    indexes = @indexes.find(term, column)
 
     return nil if indexes.nil?
 
@@ -93,11 +97,28 @@ class Table
     @indexes.insert(row, @headers)
   end
 
+  # Deletes rows where values = term in columns
+  def delete(column, term)
+    indexes = @indexes.find(term, column)
+
+    return nil if indexes.nil?
+
+    data = CSV.parse(File.read(@path), headers: true)
+    data = data.reject { |row| indexes.include?(row[0]) }
+    headers = @headers.clone.prepend(nil)
+
+    CSV.open(@path, 'w', write_headers: true, headers: headers) do |output|
+      data.each { |row| output << row }
+    end
+    # then removes this term completely as it no longer exists in the column index
+    @indexes.delete_all(term, column)
+  end
+
   # Update accepts array with hashes as objects
   # update: [{column: 'Player' , value: 'Pedro' }, #{column: 'birth_state', value: 'indiana' }]
   # where:  {column: 'Player', term: 'Bob Evans'}
   def update(to_update, where)
-    indexes = @indexes.find(where[:column], where[:term])
+    indexes = @indexes.find(where[:term], where[:column])
     return nil if indexes.nil?
 
     _update_rows(to_update, indexes)

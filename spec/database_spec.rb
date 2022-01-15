@@ -48,7 +48,7 @@ describe 'database' do
 
   it 'rejects updating row with where' do
     where = { column: 'Player', term: 'Gene Englund' }
-    values = [{ column: 'Player', name: 'Jose Marcos' }, { column: 'birth_state', name: 'indiana' }]
+    values = [{ column: 'Player', value: 'Jose Marcos' }, { column: 'birth_state', value: 'indiana' }]
 
     db.player_test.update(values, where)
     result = db.player_test.find('Player', 'Jose Marcos')
@@ -56,7 +56,6 @@ describe 'database' do
     unless result.nil?
       result = result.flatten
       expect(result[1]).to eq('Jose Marcos')
-      p 'called'
     end
 
     restore_test_file
@@ -64,13 +63,38 @@ describe 'database' do
 
   it 'rejects updating index TRIE when updating db' do
     where = { column: 'Player', term: 'Gene Englund' }
-    values = [{ column: 'Player', name: 'Jose Marcos' }, { column: 'birth_state', name: 'indiana' }]
+    values = [{ column: 'Player', value: 'Jose Marcos' }, { column: 'birth_state', value: 'indiana' }]
 
     db.player_test.update(values, where)
     result = db.player_test.find('Player', 'Gene Englund')
 
     expect(result).to eq(nil)
 
+    restore_test_file
+  end
+
+  it 'rejects deleting single row with where' do
+    result = db.player_test.find('Player', 'Don Carlson')
+    expect(result[0][1]).to eq('Don Carlson')
+
+    db.player_test.delete('Player', 'Don Carlson')
+    result = db.player_test.find('Player', 'Don Carlson')
+
+    expect(result).to eq(nil)
+
+    restore_test_file
+  end
+
+  it 'rejects deleting multiple rows with where' do
+    result = db.player_test.find('height', '180')
+
+    expect(result).to be_truthy
+
+    db.player_test.delete('height', '180')
+    result = db.player_test.find('height', '180')
+    # expect(result).to eq(nil)
+
+    expect(result).to eq(nil)
     restore_test_file
   end
 end
