@@ -24,11 +24,9 @@ end
 # Tokenizer class
 class Tokenizer
   include TokenizerImplementation
-  def initialize
-    @cursor = 0
-  end
 
   def load(line)
+    @cursor = 0
     @line = line
   end
 

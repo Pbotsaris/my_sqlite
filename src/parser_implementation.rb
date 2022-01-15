@@ -200,6 +200,8 @@ module ParserImplementation
 
   def eat(type)
     token = @lookahead
+    return nil if token.nil?
+
     @error = " Unexpected end of input #{token[:type]}. expected:#{type}" unless token && token[:type] == type
     @lookahead = @tokenizer.next_token
 
