@@ -1,11 +1,12 @@
 # frozen_string_literal: true
+
 module Constants
   OFFSET = 32
   ASCII_MAX = 128
   MAX_CHARS = Constants::ASCII_MAX - Constants::OFFSET
 end
 
-# trie node
+# A a TRIE node with MAX_CHARS branches
 class Node
   include Constants
 
@@ -26,7 +27,8 @@ class Node
   end
 end
 
-# a Trie to search words
+# a Trie to search words that returns a node
+# The node contains the primary key in database
 class Trie
   include Constants
 
@@ -36,6 +38,7 @@ class Trie
     @root = Node.new('a')
   end
 
+  # finds a word in the TRIE
   def find(word)
     charlist = word.split('')
     current = @root
@@ -49,8 +52,32 @@ class Trie
 
       current = current.next[index]
     end
+    nil
   end
 
+  # Updates a node.id in the TRIE with a new_id.  If node does not have any id left
+  # remove word from TRIE. It does not clear references in the tree
+  def update(id, new_id, word)
+    node = find(word)
+    node.id = node.id.reject { |i| i == id }
+    node.id << new_id
+  end
+
+  #  Deletes a node.id in the TRIE
+  def delete(id, word)
+    node = find(word)
+    node.id = node.id.reject { |i| i == id }
+    node.is_word = false if node.id.empty?
+  end
+
+  # Deletes word for TRIE. It does not clear the references in the tree, however.
+  def delete_all(word)
+    node = find(word)
+    node.id = []
+    node.is_word = false
+  end
+
+  #  Inserts a node to the TRIE
   def insert(id, word)
     return if word.nil?
 
@@ -83,15 +110,3 @@ class Trie
     node.word = word
   end
 end
-#
-#file = File.read('data/nba_player_data.csv')
-#data = CSV.parse file, headers: true
-#trie = Trie.new
-#
-#data.each do |row|
-#   
-#  
-#
-#end
-#
-

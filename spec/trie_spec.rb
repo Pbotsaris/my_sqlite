@@ -46,4 +46,52 @@ describe 'tries' do
     expect(node.word).to eq(name2)
     expect(node.id[0]).to eq(2)
   end
+
+  it 'rejects updating the id of a word' do
+    name = 'jose'
+
+    trie = Trie.new
+    trie.insert(1, name)
+    trie.insert(2, name)
+
+    trie.update(1, 10, name)
+    node = trie.find(name)
+
+    expect(node.id).to eq([2, 10])
+  end
+
+  it 'rejects deleting id of a word' do
+    name = 'jose'
+    trie = Trie.new
+    trie.insert(1, name)
+    trie.insert(2, name)
+
+    trie.delete(1, name)
+    node = trie.find(name)
+
+    expect(node.id).to eq([2])
+  end
+
+  it 'rejects delete a word with delete' do
+    name = 'jose'
+    trie = Trie.new
+    trie.insert(1, name)
+
+    trie.delete(1, name)
+    node = trie.find(name)
+
+    expect(node).to eq(nil)
+  end
+
+  it 'rejects deleting a word with delete_all' do
+    name = 'jose'
+    trie = Trie.new
+    trie.insert(1, name)
+    trie.insert(2, name)
+
+    trie.delete_all(name)
+    node = trie.find(name)
+
+    expect(node).to eq(nil)
+  end
 end
