@@ -71,6 +71,9 @@ class Request
     @request[:join][:columns] = columns
   end
 
+  def run
+  end
+
   private
 
   def _init_request

@@ -181,13 +181,31 @@ end
 # The Database class consists of a collection of tables.
 # the database tables paths are persisted to the data/db_name.db
 class Database
+  attr_reader :loaded
+  alias loaded? loaded
+
   def initialize(path)
+    @loaded = false
+    return unless _file_exists? path, 'Database'
+
+    @path = path
     table_files = _parse_keypairs(path)
     _load_tables(table_files)
+    @loaded = true
   end
 
   def list_table
-    instance_variables
+    # skip all other instance variables when listing tables
+    instance_variables.reject { |var| var.match?(/@loaded|@path/) } if @loaded
+  end
+
+  def import_table(name, path)
+    return unless _file_exists? path, 'Table'
+
+    File.open(@path, 'a') do |file|
+      file << "#{name}=#{path}"
+    end
+    _load_tables([{ name: name, path: path }])
   end
 
   private
@@ -195,6 +213,7 @@ class Database
   def _load_tables(table_files)
     table_files.each do |table_file|
       # using singletooon_class to make attrib avail with attr_accessor
+      puts table_file
       singleton_class.class_eval { attr_accessor table_file[:name] }
       send("#{table_file[:name]}=", Table.new(table_file[:path]))
     end
@@ -206,5 +225,12 @@ class Database
       table_name, table_path = table_keypair.split('=')
       { name: table_name, path: table_path }
     end
+  end
+
+  def _file_exists?(path, type)
+    return true if File.file? path
+
+    puts "error: #{type} at #{path} does not exist."
+    false
   end
 end
