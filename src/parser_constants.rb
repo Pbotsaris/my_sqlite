@@ -8,9 +8,12 @@ module ParserConstants
     UPDATE = 'UpdateExpression'
     INSERT = 'InsertExpression'
     DELETE = 'DeleteExpression'
+    JOIN = 'JoinExpression'
+    ON = 'OnExpression'
     VALUES = 'ValuesExpression'
     WHERE = 'WhereExpression'
     SET = 'SetExpression'
+    ORDER = 'OrderExpression'
   end
 
   module Statement
@@ -24,5 +27,6 @@ module ParserConstants
     ASSIGN = 'Assign'
     NUMERIC_LITERAL = 'NumericLiteral'
     STRING_LITERAL = 'StringLiteral'
+    ORDER_OPTION = 'OrderOption'
   end
 end

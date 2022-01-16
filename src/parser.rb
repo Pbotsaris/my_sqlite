@@ -5,6 +5,8 @@ require_relative './tokenizer_implementation'
 
 # Parser class
 class Parser
+  attr_accessor :error
+
   include ParserImplementation
 
   def initialize
@@ -24,11 +26,9 @@ end
 # Tokenizer class
 class Tokenizer
   include TokenizerImplementation
-  def initialize
-    @cursor = 0
-  end
 
   def load(line)
+    @cursor = 0
     @line = line
   end
 

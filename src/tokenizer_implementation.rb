@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+# private implementation for the Tokenizer class
 module TokenizerImplementation
-  # private implementation for the Tokenizer class
   SPEC = [
     [/^\s+/, nil],              # whitespace
     [/--.*/, nil],              # comments
@@ -16,8 +16,12 @@ module TokenizerImplementation
     [/^insert into/im, 'INSERT'],
     [/^delete/im, 'DELETE'],
     [/^values/im, 'VALUES'],
+    [/^join/im, 'JOIN'],
+    [/^on/im, 'ON'],
     [/^set/im, 'SET'],
     [/^where/im, 'WHERE'],
+    [/^order by/im, 'ORDER'],
+    [/^asc|^desc/im, 'ORDER_OPTION'],
 
     [/^\d+/, 'NUMBER'],
     [/^"[^"]*/, 'STRING'],
