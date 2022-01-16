@@ -121,6 +121,8 @@ module ParserImplementation
 
     handle_multiple_arguments(root) if multiple_arguments?
 
+    root[:left] = order_option if order_option?
+
     expression[:next] = self.expression unless end_of_statement?
 
     expression
@@ -133,8 +135,6 @@ module ParserImplementation
 
       eat(',') if multiple_arguments?
     end
-
-    root[:left] = order_option if order_option?
   end
 
   def add_to_left(root)

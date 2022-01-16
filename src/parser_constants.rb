@@ -11,6 +11,7 @@ module ParserConstants
     VALUES = 'ValuesExpression'
     WHERE = 'WhereExpression'
     SET = 'SetExpression'
+    ORDER = 'OrderExpression'
   end
 
   module Statement
@@ -24,5 +25,6 @@ module ParserConstants
     ASSIGN = 'Assign'
     NUMERIC_LITERAL = 'NumericLiteral'
     STRING_LITERAL = 'StringLiteral'
+    ORDER_OPTION = 'OrderOption'
   end
 end
