@@ -5,6 +5,8 @@ require_relative './tokenizer_implementation'
 
 # Parser class
 class Parser
+  attr_accessor :error
+
   include ParserImplementation
 
   def initialize

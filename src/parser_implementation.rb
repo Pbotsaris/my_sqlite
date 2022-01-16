@@ -54,6 +54,8 @@ module ParserImplementation
       values_expression
     when 'WHERE'
       where_expression
+    when 'ORDER'
+      order_expression
     when 'SET'
       set_expression
     when 'NUMBER'
@@ -103,6 +105,11 @@ module ParserImplementation
     arguments(Expression::SET)
   end
 
+  def order_expression
+    eat('ORDER')
+    arguments(Expression::ORDER)
+  end
+
   def arguments(type)
     return nil unless identifier_or_params?
 
@@ -126,6 +133,8 @@ module ParserImplementation
 
       eat(',') if multiple_arguments?
     end
+
+    root[:left] = order_option if order_option?
   end
 
   def add_to_left(root)
@@ -194,6 +203,11 @@ module ParserImplementation
     { type: Types::PARAMS, value: values, left: nil, right: nil }
   end
 
+  def order_option
+    token = eat('ORDER_OPTION')
+    { type: Types::ORDER_OPTION, value: token[:value], right: nil, left: nil }
+  end
+
   def assign_operator
     token = eat('ASSIGN')
     { type: Types::ASSIGN, value: token[:value], left: nil, right: nil }
@@ -203,7 +217,7 @@ module ParserImplementation
     token = @lookahead
     return nil if token.nil?
 
-    @error = " Unexpected end of input #{token[:type]}. expected:#{type}" unless token && token[:type] == type
+    @error = " Unexpected end of input '#{token[:type]}'. expected: '#{type}'" unless token && token[:type] == type
     @lookahead = @tokenizer.next_token
 
     token
@@ -219,6 +233,10 @@ module ParserImplementation
 
   def assign?
     @lookahead && @lookahead[:type] == 'ASSIGN'
+  end
+
+  def order_option?
+    @lookahead && @lookahead[:type] == 'ORDER_OPTION'
   end
 
   def multiple_arguments?
