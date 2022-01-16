@@ -50,6 +50,10 @@ module ParserImplementation
       insert_expression
     when 'DELETE'
       delete_expression
+    when 'JOIN'
+      join_expression
+    when 'ON'
+      on_expression
     when 'VALUES'
       values_expression
     when 'WHERE'
@@ -88,6 +92,16 @@ module ParserImplementation
   def delete_expression
     eat('DELETE')
     create_expression_without_arguments(Expression::DELETE)
+  end
+
+  def join_expression
+    eat('JOIN')
+    arguments(Expression::JOIN)
+  end
+
+  def on_expression
+    eat('ON')
+    arguments(Expression::ON)
   end
 
   def values_expression
@@ -135,6 +149,7 @@ module ParserImplementation
 
       eat(',') if multiple_arguments?
     end
+    root[:left] = order_option if order_option?
   end
 
   def add_to_left(root)

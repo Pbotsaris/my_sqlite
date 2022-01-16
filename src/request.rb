@@ -38,6 +38,7 @@ class Request
 
   def delete
     @request[:action] = :delete
+    @request[:columns] = ['*']
   end
 
   # values = array
@@ -62,9 +63,17 @@ class Request
     @request[:order] = { columns: columns, sort: option ? option.downcase.to_sym : :asc }
   end
 
+  def join(table)
+    @request[:join] = { table: table, columns: ['*'] }
+  end
+
+  def on(columns)
+    @request[:join][:columns] = columns
+  end
+
   private
 
   def _init_request
-    { table: nil, columns: [], values: [], where: [], order: [], action: nil }
+    { table: nil, columns: [], values: [], where: [], order: {}, join: {}, action: nil }
   end
 end

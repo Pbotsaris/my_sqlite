@@ -8,6 +8,8 @@ module ParserConstants
     UPDATE = 'UpdateExpression'
     INSERT = 'InsertExpression'
     DELETE = 'DeleteExpression'
+    JOIN = 'JoinExpression'
+    ON = 'OnExpression'
     VALUES = 'ValuesExpression'
     WHERE = 'WhereExpression'
     SET = 'SetExpression'

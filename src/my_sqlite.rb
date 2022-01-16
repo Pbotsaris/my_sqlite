@@ -25,6 +25,13 @@ class SQlite
     end
   end
 
+  # this method is used for testing purpuses only
+  def test(ast)
+    @ast = ast
+    evaluate
+    @request
+  end
+
   def quit?(line)
     line.match?(/^quit/)
   end
@@ -38,8 +45,8 @@ class SQlite
     @ast[:body].each do |statement|
       expression(statement[:expression])
     end
-    pp @request.request
+#    pp @request.request
   end
 end
 
-SQlite.new.run
+# SQlite.new.run
