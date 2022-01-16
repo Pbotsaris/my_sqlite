@@ -16,6 +16,8 @@ module TokenizerImplementation
     [/^insert into/im, 'INSERT'],
     [/^delete/im, 'DELETE'],
     [/^values/im, 'VALUES'],
+    [/^join/im, 'JOIN'],
+    [/^on/im, 'ON'],
     [/^set/im, 'SET'],
     [/^where/im, 'WHERE'],
     [/^order by/im, 'ORDER'],

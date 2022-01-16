@@ -26,6 +26,10 @@ module SQLiteImplementation
       where(expression[:value])
     when Expression::DELETE
       delete
+    when Expression::JOIN
+      join(expression[:value])
+    when Expression::ON
+      on(expression[:value])
     when Expression::ORDER
       order(expression[:value])
     end
@@ -70,6 +74,15 @@ module SQLiteImplementation
     @request.delete
   end
 
+  def join(node)
+    @request.join(node[:name])
+  end
+
+  def on(node)
+    columns = load_columns(node, [])
+    @request.on(columns)
+  end
+
   def order(node)
     columns = load_columns(node, [])
     option = load_order_option(node)
@@ -97,8 +110,8 @@ module SQLiteImplementation
   end
 
   def load_order_option(node)
-    return node[:value] if node[:type] == Types::ORDER_OPTION
     return nil if node.nil?
+    return node[:value] if node[:type] == Types::ORDER_OPTION
 
     load_order_option(node[:left])
   end
