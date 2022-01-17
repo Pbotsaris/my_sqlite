@@ -15,8 +15,9 @@ class Table
   end
 
   def write_csv
-    CSV.foreach(@filename, 'ab') do |csv|
-      csv << ['name' => 'Heather Kesto', 'year_start' => '5', 'year_end' => '55', 'position' => 'F']
+
+    CSV.open(@filename, 'a+') do |csv|
+      csv << ["Heather Kesto", "5", "55", "F"]
     end
   end
 
@@ -27,6 +28,4 @@ end
 
 table = Table.new('src/data/nba_player_data_light.csv')
 table.read_csv
-# p table.filename
-#table.write_csv
-#table.read_csv
+table.write_csv
