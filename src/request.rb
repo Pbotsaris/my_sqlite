@@ -6,7 +6,8 @@ class Request
   alias valid? valid
   alias complete? complete
 
-  def initialize
+  def initialize(path)
+    @database = Database.new(path)
     @request = _init_request
     @valid = true
     @complete = false
@@ -54,7 +55,10 @@ class Request
   end
 
   def where(columns, values)
-    where = columns.each_with_index.map { |column, i| { column: column, term: values[i] } }
+    where = columns.each_with_index.map do |column, i|
+      # integer needs to be converted to strings for TRIE
+      { column: column, term: values[i].is_a?(Integer) ? values[i].to_s : values[i] }
+    end
 
     @request[:where] = where
   end
@@ -72,11 +76,37 @@ class Request
   end
 
   def run
+    return unless _table_exists?
+
+    case @request[:action]
+    when :select
+      _select
+    end
   end
 
   private
 
+  def _select
+    if @request[:where].empty?
+      @database.instance_variable_get("@#{@request[:table]}").list(@request[:columns])
+    else
+      # program supports only a single where clase at this point
+      where = @request[:where][0]
+      @database.instance_variable_get("@#{@request[:table]}").list_where(@request[:columns], where)
+    end
+  end
+
   def _init_request
     { table: nil, columns: [], values: [], where: [], order: {}, join: {}, action: nil }
+  end
+
+  def _table_exists?
+    tables = @database.list_tables
+
+    unless tables.include?(@request[:table])
+    puts "Table #{@request.request[:table]} does not exist" if @request.request[:table]
+    return false
+    end
+    true
   end
 end

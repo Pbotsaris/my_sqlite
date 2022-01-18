@@ -6,16 +6,6 @@ require_relative './parser/parser_constants'
 module SQLiteImplementation
   include ParserConstants
 
-  def table_exist?
-    tables = @database.list_tables
-
-    unless tables.include?(@request.request[:table])
-      puts "Table #{@request.request[:table]} does not exist" if @request.request[:table]
-      return false
-    end
-    true
-  end
-
   def expression(expression)
     return if expression.nil?
 

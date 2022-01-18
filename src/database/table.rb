@@ -18,11 +18,25 @@ class Table
   end
 
   def list(columns)
+    return unless _column_exists? columns
+
     data = CSV.parse(File.read(@path), headers: true)
 
-    return unless _column_exists? data, columns
-
     _print(data, columns)
+  end
+
+  def list_where(columns, where)
+    return unless _column_exists? columns
+
+    cols = []
+
+    @headers.each_with_index do |header, i|
+      cols.append(i) if columns.include?(header) || columns[0] == '*'
+    end
+
+    table = find(where[:column], where[:term])
+
+    _print_table_array(table, cols)
   end
 
   # Finds database rows according search term in a column
@@ -91,11 +105,22 @@ class Table
     row.each_with_index { |column, i| i.zero? ? print("| #{column[1]} |") : print(" #{column[1]} |") }
   end
 
-  def _column_exists?(data, columns)
+  def _print_table_array(table, cols)
+    table.each do |row|
+      row.each_with_index do |column, i|
+        if cols.include?(i)
+          i.zero? ? print("| #{column} |") : print(" #{column} |")
+        end
+      end
+    end
+    puts ''
+  end
+
+  def _column_exists?(columns)
     return true if columns[0] == '*'
 
     invalid = false
-    columns.each { |column| invalid = column unless data.headers.include?(column) }
+    columns.each { |column| invalid = column unless @headers.include?(column) }
     if invalid
       puts "#{invalid} does not exist."
       return false

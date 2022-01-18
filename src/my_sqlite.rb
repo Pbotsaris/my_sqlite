@@ -12,8 +12,7 @@ class SQlite
   include SQLiteImplementation
   def initialize(path)
     @parser = Parser.new
-    @request = Request.new
-    @database = Database.new(path)
+    @request = Request.new(path)
     @ast = {}
   end
 
@@ -29,7 +28,7 @@ class SQlite
       @ast = @parser.parse(line)
       @parser.error ? print_error : evaluate
 
-      execute
+      @request.run
     end
   end
 
@@ -71,15 +70,6 @@ class SQlite
   def evaluate
     @ast[:body].each do |statement|
       expression(statement[:expression])
-    end
-  end
-
-  def execute
-    return unless table_exist?
-
-    case @request.request[:action]
-    when :select
-      @database.instance_variable_get("@#{@request.request[:table]}").list(@request.request[:columns])
     end
   end
 end
