@@ -60,13 +60,13 @@ describe 'CLI Select' do
     compare = { table: 'students',
                 columns: %w[id name],
                 values: [],
-                where: [{ column: 'name', term: 'Khalil' }, { column: 'id', term: 10 }],
+                where: [{ column: 'name', term: 'Khalil' }, { column: 'id', term: '10' }],
                 order: {}, # :asc is default
                 join: {},
                 action: :select }
 
     parser = Parser.new
-    ast = parser.parse("SELECT id, name FROM students WHERE name= 'Khalil', id=10 ;")
+    ast = parser.parse("SELECT id, name FROM students WHERE name= 'Khalil', id= '10' ;")
 
     program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
@@ -131,7 +131,7 @@ describe 'CLI insert delete update' do
   it 'UPDATE students SET key=pair, key=pair WHERE key=pair' do
     compare = { table: 'students',
                 columns: %w[email age],
-                values: ['k@email.com', 28],
+                values: ['k@email.com', '28'],
                 where: [{ column: 'name', term: 'Khalil' }],
                 order: {},
                 join: {},

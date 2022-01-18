@@ -44,12 +44,15 @@ class Request
 
   # values = array
   def values(values)
+    values = _convert_values(values)
     @request[:values] = values
     @request[:columns] = ['*']
   end
 
   # columns and values are arrays
   def set(columns, values)
+    values = _convert_values(values)
+
     @request[:columns] = columns
     @request[:values] = values
   end
@@ -104,9 +107,15 @@ class Request
     tables = @database.list_tables
 
     unless tables.include?(@request[:table])
-    puts "Table #{@request.request[:table]} does not exist" if @request.request[:table]
-    return false
+      puts "Table #{@request.request[:table]} does not exist" if @request.request[:table]
+      return false
     end
     true
+  end
+
+  def _convert_values(values)
+    values.map do |value|
+      value.is_a?(Integer) ? value.to_s : value
+    end
   end
 end

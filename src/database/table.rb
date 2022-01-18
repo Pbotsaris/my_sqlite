@@ -36,6 +36,8 @@ class Table
 
     table = find(where[:column], where[:term])
 
+    return if table.nil?
+
     _print_table_array(table, cols)
   end
 
