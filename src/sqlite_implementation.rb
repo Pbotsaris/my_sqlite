@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './parser_constants'
+require_relative './parser/parser_constants'
 
 # main sql class implementation
 module SQLiteImplementation

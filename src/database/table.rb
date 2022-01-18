@@ -1,67 +1,8 @@
 # frozen_string_literal: true
 
 require 'csv'
-require 'pp'
 require 'fileutils'
-require_relative './trie'
-
-#  Indexes class uses a Trie data structure to keep the indexes of each columns
-#  Indexes are stored in memory for quick access when a database and tables classes are instantiated.
-class Indexes
-  def load(path, columns)
-    file = File.read path
-    data = CSV.parse file, headers: true
-    _set_columns(columns)
-    _read_column(data, columns)
-    # resturns row count
-    data.length
-  end
-
-  def find(name, column)
-    found = instance_variable_get("@#{column}").find name
-    found&.id
-  end
-
-  def insert_one(row, column)
-    id = row[0]
-    word = row[column]
-    instance_variable_get("@#{column}").insert(id, word)
-  end
-
-  def delete(row, column)
-    id = row[0]
-    word = row[column]
-    instance_variable_get("@#{column}").delete(id, word)
-  end
-
-  def delete_all(word, column)
-    instance_variable_get("@#{column}").delete_all(word)
-  end
-
-  def insert(row, columns)
-    0.upto(columns.length - 1) do |column_index|
-      unless columns[column_index].nil?
-        instance_variable_get("@#{columns[column_index]}").insert(row[0].to_s, row[column_index + 1])
-      end
-    end
-  end
-
-  private
-
-  def _read_column(data, columns)
-    data.each do |row|
-      columns.each do |column|
-        instance_variable_get("@#{column}").insert(row[0], row[column]) unless column.nil?
-      end
-    end
-  end
-
-  def _set_columns(columns)
-    columns.each do |column|
-      instance_variable_set("@#{column}", Trie.new) unless column.nil?
-    end
-  end
-end
+require_relative './indexes'
 
 # The table class represents a table in the database.
 # You can search, read, write and update a given table using this class
@@ -211,65 +152,5 @@ class Table
   def _load_headers(path)
     headers = CSV.open(path, &:readline)
     headers.reject(&:nil?)
-  end
-end
-
-# The Database class consists of a collection of tables.
-# the database tables paths are persisted to the data/db_name.db
-class Database
-  attr_reader :loaded
-  alias loaded? loaded
-
-  def initialize(path)
-    @loaded = false
-    return unless _file_exists? path, 'Database'
-
-    @path = path
-    table_files = _parse_keypairs(path)
-    _load_tables(table_files)
-    @loaded = true
-  end
-
-  def list_tables
-    # skip all other instance variables when listing tables
-    tables = instance_variables.reject { |var| var.match?(/@loaded|@path/) } if @loaded
-    tables.map { |table| table.to_s[1..table.length] }
-  end
-
-  def import_table(name, path)
-    return unless _file_exists? path, 'Table'
-
-    destination = "data/#{name}_table.csv"
-    FileUtils.cp(path, destination)
-
-    File.open(@path, 'a') do |file|
-      file << "#{name}=#{destination}"
-    end
-    _load_tables([{ name: name, path: destination }])
-  end
-
-  private
-
-  def _load_tables(table_files)
-    table_files.each do |table_file|
-      # using singletooon_class to make attrib avail with attr_accessor
-      singleton_class.class_eval { attr_accessor table_file[:name] }
-      send("#{table_file[:name]}=", Table.new(table_file[:path]))
-    end
-  end
-
-  def _parse_keypairs(path)
-    table_keypairs = File.read(path).split(/\n/)
-    table_keypairs.map do |table_keypair|
-      table_name, table_path = table_keypair.split('=')
-      { name: table_name, path: table_path }
-    end
-  end
-
-  def _file_exists?(path, type)
-    return true if File.file? path
-
-    puts "error: #{type} at #{path} does not exist."
-    false
   end
 end

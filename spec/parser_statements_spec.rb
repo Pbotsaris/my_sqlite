@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../src/parser'
+require_relative '../src/parser/parser'
 
 describe 'Parser Statements' do
   it 'rejects statement with INSERT and VALUES' do

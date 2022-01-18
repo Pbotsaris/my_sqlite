@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative '../src/parser'
-require_relative '../src/parser_constants'
+require_relative '../src/parser/parser'
+require_relative '../src/parser/parser_constants'
 
 Statement = ParserConstants::Statement
 Expression = ParserConstants::Expression

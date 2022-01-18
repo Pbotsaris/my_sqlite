@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../src/my_sqlite'
-require_relative '../src/parser'
+require_relative '../src/parser/parser'
 
 # tests for CLI interface
 describe 'CLI Select' do
@@ -17,7 +17,7 @@ describe 'CLI Select' do
     parser = Parser.new
     ast = parser.parse('SELECT id, name FROM students ORDER BY name;')
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
     expect(request.request).to eq(compare)
   end
@@ -34,7 +34,7 @@ describe 'CLI Select' do
     parser = Parser.new
     ast = parser.parse('SELECT id, name FROM students ORDER BY name DESC;')
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
     expect(request.request).to eq(compare)
   end
@@ -51,7 +51,7 @@ describe 'CLI Select' do
     parser = Parser.new
     ast = parser.parse('SELECT id, name FROM students ORDER BY name, id DESC;')
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
     expect(request.request).to eq(compare)
   end
@@ -68,7 +68,7 @@ describe 'CLI Select' do
     parser = Parser.new
     ast = parser.parse("SELECT id, name FROM students WHERE name= 'Khalil', id=10 ;")
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
 
     expect(request.request).to eq(compare)
@@ -86,7 +86,7 @@ describe 'CLI Select' do
     parser = Parser.new
     ast = parser.parse('SELECT id, name FROM students JOIN homework ON id, class;')
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
 
     expect(request.request).to eq(compare)
@@ -106,7 +106,7 @@ describe 'CLI insert delete update' do
     parser = Parser.new
     ast = parser.parse('INSERT INTO students values(Khalil, 19, Israel);')
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
     expect(request.request).to eq(compare)
   end
@@ -123,7 +123,7 @@ describe 'CLI insert delete update' do
     parser = Parser.new
     ast = parser.parse("DELETE FROM students WHERE name='Khalil';")
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
     expect(request.request).to eq(compare)
   end
@@ -140,7 +140,7 @@ describe 'CLI insert delete update' do
     parser = Parser.new
     ast = parser.parse("UPDATE students SET email='k@email.com', age=28 WHERE name='Khalil' ;")
 
-    program = SQlite.new
+    program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
     expect(request.request).to eq(compare)
   end

@@ -2,9 +2,9 @@
 
 require 'readline'
 require 'pp'
-require_relative './parser'
+require_relative './parser/parser'
 require_relative './request'
-require_relative './database'
+require_relative './database/database'
 require_relative './sqlite_implementation'
 
 # a class
@@ -37,6 +37,7 @@ class SQlite
   def test(ast)
     @ast = ast
     evaluate
+    @request
   end
 
   def quit?(line)

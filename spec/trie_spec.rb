@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../src/trie'
+require_relative '../src/database/trie'
 
 describe 'tries' do
   it 'rejects insert and find node' do

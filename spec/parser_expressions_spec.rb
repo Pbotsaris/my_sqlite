@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../src/parser'
+require_relative '../src/parser/parser'
 
 describe 'Parser Expressions' do
   it 'rejects FROM expressions' do

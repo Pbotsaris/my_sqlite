@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../src/database'
+require_relative '../src/database/database'
 require 'fileutils'
 
 db = Database.new 'data/nba_test.db'
