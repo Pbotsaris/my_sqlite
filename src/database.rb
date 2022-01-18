@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'csv'
+require 'pp'
+require 'fileutils'
 require_relative './trie'
 
 #  Indexes class uses a Trie data structure to keep the indexes of each columns
@@ -74,6 +76,14 @@ class Table
     @next_row = @indexes.load @path, @headers
   end
 
+  def list(columns)
+    data = CSV.parse(File.read(@path), headers: true)
+
+    return unless _column_exists? data, columns
+
+    _print(data, columns)
+  end
+
   # Finds database rows according search term in a column
   def find(column, term)
     return nil unless @headers.include? column
@@ -125,6 +135,32 @@ class Table
   end
 
   private
+
+  def _print(data, columns)
+    data.each do |row|
+      block = proc { |column, i| i.zero? ? print("| #{row[column]} |") : print(" #{row[column]} |") }
+
+      columns[0] == '*' ? _print_all(row) : columns.each_with_index(&block)
+
+      puts ''
+    end
+  end
+
+  def _print_all(row)
+    row.each_with_index { |column, i| i.zero? ? print("| #{column[1]} |") : print(" #{column[1]} |") }
+  end
+
+  def _column_exists?(data, columns)
+    return true if columns[0] == '*'
+
+    invalid = false
+    columns.each { |column| invalid = column unless data.headers.include?(column) }
+    if invalid
+      puts "#{invalid} does not exist."
+      return false
+    end
+    true
+  end
 
   def _update_rows(to_update, indexes)
     headers = @headers.clone.prepend(nil)
@@ -194,18 +230,22 @@ class Database
     @loaded = true
   end
 
-  def list_table
+  def list_tables
     # skip all other instance variables when listing tables
-    instance_variables.reject { |var| var.match?(/@loaded|@path/) } if @loaded
+    tables = instance_variables.reject { |var| var.match?(/@loaded|@path/) } if @loaded
+    tables.map { |table| table.to_s[1..table.length] }
   end
 
   def import_table(name, path)
     return unless _file_exists? path, 'Table'
 
+    destination = "data/#{name}_table.csv"
+    FileUtils.cp(path, destination)
+
     File.open(@path, 'a') do |file|
-      file << "#{name}=#{path}"
+      file << "#{name}=#{destination}"
     end
-    _load_tables([{ name: name, path: path }])
+    _load_tables([{ name: name, path: destination }])
   end
 
   private
@@ -213,7 +253,6 @@ class Database
   def _load_tables(table_files)
     table_files.each do |table_file|
       # using singletooon_class to make attrib avail with attr_accessor
-      puts table_file
       singleton_class.class_eval { attr_accessor table_file[:name] }
       send("#{table_file[:name]}=", Table.new(table_file[:path]))
     end

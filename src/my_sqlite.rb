@@ -28,6 +28,8 @@ class SQlite
 
       @ast = @parser.parse(line)
       @parser.error ? print_error : evaluate
+
+      execute
     end
   end
 
@@ -35,7 +37,6 @@ class SQlite
   def test(ast)
     @ast = ast
     evaluate
-    @request
   end
 
   def quit?(line)
@@ -45,7 +46,7 @@ class SQlite
   def table?(line)
     if line.match?(/^tables|^.tables/)
       puts '', 'Tables:'
-      @database.list_table.each { |table| puts table.to_s[1..table.length] }
+      @database.list_tables.each { |table| puts table }
       puts ''
       return true
     end
@@ -70,15 +71,18 @@ class SQlite
     @ast[:body].each do |statement|
       expression(statement[:expression])
     end
-    pp @request.request
   end
 
   def execute
+    return unless table_exist?
+
+    case @request.request[:action]
+    when :select
+      @database.instance_variable_get("@#{@request.request[:table]}").list(@request.request[:columns])
+    end
   end
 end
 
 program = SQlite.new('data/nba_test.db')
 
 program.run
-
-
