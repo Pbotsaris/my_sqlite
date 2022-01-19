@@ -2,12 +2,14 @@
 
 require 'csv'
 require 'fileutils'
+require_relative './utils'
 require_relative './indexes'
 
 # The table class represents a table in the database.
 # You can search, read, write and update a given table using this class
 # Tables are read, written and persisted from/to disk. (data directory)
 class Table
+  include Utils
   attr_reader :headers
 
   def initialize(path)
@@ -17,15 +19,24 @@ class Table
     @next_row = @indexes.load @path, @headers
   end
 
-  def list(columns)
+  # Lists a table
+  def list(columns, order)
     return unless _column_exists? columns
 
-    data = CSV.parse(File.read(@path), headers: true)
+    data = []
+    CSV.foreach(@path, headers: true) { |row| data << row.to_h }
 
-    _print(data, columns)
+    # sort takes only one argument in this implementation
+    data.sort_by! { |row| row[order[:columns][0]] } unless order[:columns].nil?
+
+    data.reverse! if order[:sort] == :desc
+
+    # list will only print in this implementation. it does not return any data
+    Printer.print_table_hashes(data, columns)
   end
 
-  def list_where(columns, where)
+  # list a table with where clause
+  def list_where(columns, where, order)
     return unless _column_exists? columns
 
     cols = []
@@ -38,7 +49,9 @@ class Table
 
     return if table.nil?
 
-    _print_table_array(table, cols)
+    table = _sort(table, order)
+
+    Printer.print_table_arrays(table, cols)
   end
 
   # Finds database rows according search term in a column
@@ -93,29 +106,13 @@ class Table
 
   private
 
-  def _print(data, columns)
-    data.each do |row|
-      block = proc { |column, i| i.zero? ? print("| #{row[column]} |") : print(" #{row[column]} |") }
+  def _sort(table, order)
+    col_to_sort = order[:columns].nil? ? nil : @headers.index(order[:columns][0])
+    table.sort_by! { |row| row[col_to_sort + 1] } unless col_to_sort.nil?
 
-      columns[0] == '*' ? _print_all(row) : columns.each_with_index(&block)
+    table.reverse! if order[:sort] == :desc
 
-      puts ''
-    end
-  end
-
-  def _print_all(row)
-    row.each_with_index { |column, i| i.zero? ? print("| #{column[1]} |") : print(" #{column[1]} |") }
-  end
-
-  def _print_table_array(table, cols)
-    table.each do |row|
-      row.each_with_index do |column, i|
-        if cols.include?(i)
-          i.zero? ? print("| #{column} |") : print(" #{column} |")
-        end
-      end
-    end
-    puts ''
+    table
   end
 
   def _column_exists?(columns)

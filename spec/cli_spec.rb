@@ -61,7 +61,7 @@ describe 'CLI Select' do
                 columns: %w[id name],
                 values: [],
                 where: [{ column: 'name', term: 'Khalil' }, { column: 'id', term: '10' }],
-                order: {}, # :asc is default
+                order: { columns: nil, sort: :asc }, # :asc is default
                 join: {},
                 action: :select }
 
@@ -79,7 +79,7 @@ describe 'CLI Select' do
                 columns: %w[id name],
                 values: [],
                 where: [],
-                order: {},
+                order: { columns: nil, sort: :asc }, # :asc is default
                 join: { table: 'homework', columns: %w[id class] },
                 action: :select }
 
@@ -99,7 +99,7 @@ describe 'CLI insert delete update' do
                 columns: ['*'],
                 values: %w[Khalil 19 Israel],
                 where: [],
-                order: {},
+                order: { columns: nil, sort: :asc }, # :asc is default
                 join: {},
                 action: :insert }
 
@@ -116,7 +116,7 @@ describe 'CLI insert delete update' do
                 columns: ['*'],
                 values: [],
                 where: [{ column: 'name', term: 'Khalil' }],
-                order: {},
+                order: { columns: nil, sort: :asc }, # :asc is default
                 join: {},
                 action: :delete }
 
@@ -133,7 +133,7 @@ describe 'CLI insert delete update' do
                 columns: %w[email age],
                 values: ['k@email.com', '28'],
                 where: [{ column: 'name', term: 'Khalil' }],
-                order: {},
+                order: { columns: nil, sort: :asc }, # :asc is default
                 join: {},
                 action: :update }
 

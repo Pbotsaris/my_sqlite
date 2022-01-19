@@ -91,23 +91,23 @@ class Request
 
   def _select
     if @request[:where].empty?
-      @database.instance_variable_get("@#{@request[:table]}").list(@request[:columns])
+      @database.instance_variable_get("@#{@request[:table]}").list(@request[:columns], @request[:order])
     else
       # program supports only a single where clase at this point
       where = @request[:where][0]
-      @database.instance_variable_get("@#{@request[:table]}").list_where(@request[:columns], where)
+      @database.instance_variable_get("@#{@request[:table]}").list_where(@request[:columns], where, @request[:order])
     end
   end
 
   def _init_request
-    { table: nil, columns: [], values: [], where: [], order: {}, join: {}, action: nil }
+    { table: nil, columns: [], values: [], where: [], order: { columns: nil, sort: :asc }, join: {}, action: nil }
   end
 
   def _table_exists?
     tables = @database.list_tables
 
     unless tables.include?(@request[:table])
-      puts "Table #{@request.request[:table]} does not exist" if @request.request[:table]
+      puts "Table #{@request[:table]} does not exist" if @request[:table]
       return false
     end
     true

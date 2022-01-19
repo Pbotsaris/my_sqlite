@@ -32,7 +32,7 @@ class SQlite
     end
   end
 
-  # this method is used for testing purpuses only
+  # this method is used for testing requests
   def test(ast)
     @ast = ast
     evaluate
