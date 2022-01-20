@@ -86,13 +86,16 @@ class Request
       _select
     when :insert
       _insert
+    when :delete
+      _delete
+    when :update
+      _update
     end
   end
 
   private
 
   def _select
-
     if @request[:where].empty?
       @database.instance_variable_get("@#{@request[:table]}").list(@request[:columns], @request[:order])
     else
@@ -114,6 +117,29 @@ class Request
     @database.instance_variable_get("@#{@request[:table]}").append(@request[:values])
   end
 
+  def _update
+    return unless _valid_to_update?
+
+    to_update = @request[:columns].each_with_index.map do |column, i|
+      { column: column, value: @request[:values][i] }
+    end
+
+    where = @request[:where][0]
+
+    @database.instance_variable_get("@#{@request[:table]}").update(to_update, where)
+  end
+
+  def _delete
+    # delete must have a where clause to prevent deleting a whole table
+    if @request[:where].empty?
+      puts 'DELETE must be accompanied by a WHERE clause'
+      return
+    end
+
+    where = @request[:where][0]
+    @database.instance_variable_get("@#{@request[:table]}").delete(where[:column], where[:term])
+  end
+
   def _init_request
     { table: nil, columns: [], values: [], where: [], order: { columns: nil, sort: :asc }, join: {}, action: nil }
   end
@@ -123,6 +149,19 @@ class Request
 
     unless tables.include?(@request[:table])
       puts "Table #{@request[:table]} does not exist" if @request[:table]
+      return false
+    end
+    true
+  end
+
+  def _valid_to_update?
+    if @request[:values].empty? || @request[:columns].empty?
+      puts 'Specify the columns and values to update with a SET clause'
+      return false
+    end
+
+    if @request[:where].empty?
+      puts 'Select the row to update with a WHERE cluase'
       return false
     end
     true

@@ -98,8 +98,10 @@ class Table
   # update: [{column: 'Player' , value: 'Pedro' }, #{column: 'birth_state', value: 'indiana' }]
   # where:  {column: 'Player', term: 'Bob Evans'}
   def update(to_update, where)
+    return unless _valid_to_update? to_update
+
     indexes = @indexes.find(where[:term], where[:column])
-    return nil if indexes.nil?
+    return if indexes.nil?
 
     _update_rows(to_update, indexes)
   end
@@ -108,7 +110,7 @@ class Table
 
   def _sort(table, order)
     col_to_sort = order[:columns].nil? ? nil : @headers.index(order[:columns][0])
-    table.sort_by! { |row| row[col_to_sort + 1] } unless col_to_sort.nil?
+    table.sort_by! { |row| row[col_to_sort] } unless col_to_sort.nil?
 
     table.reverse! if order[:sort] == :desc
 
@@ -125,6 +127,19 @@ class Table
       return false
     end
     true
+  end
+
+  def _valid_to_update?(to_update)
+    valid = true
+
+    to_update.each do |item|
+      unless @headers.include? item[:column]
+        valid = false
+        puts "column #{item[:column]} does not exist"
+      end
+    end
+
+    valid
   end
 
   def _update_rows(to_update, indexes)
