@@ -84,12 +84,15 @@ class Request
     case @request[:action]
     when :select
       _select
+    when :insert
+      _insert
     end
   end
 
   private
 
   def _select
+
     if @request[:where].empty?
       @database.instance_variable_get("@#{@request[:table]}").list(@request[:columns], @request[:order])
     else
@@ -97,6 +100,18 @@ class Request
       where = @request[:where][0]
       @database.instance_variable_get("@#{@request[:table]}").list_where(@request[:columns], where, @request[:order])
     end
+  end
+
+  def _insert
+    return if @request[:values].nil?
+
+    table_length = @database.instance_variable_get("@#{@request[:table]}").headers.length
+
+    if @request[:values].length < table_length
+      puts 'Number of columns in VALUES does not match'
+      return
+    end
+    @database.instance_variable_get("@#{@request[:table]}").append(@request[:values])
   end
 
   def _init_request
