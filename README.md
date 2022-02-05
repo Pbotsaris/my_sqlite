@@ -2,7 +2,6 @@
 
 A naive implementation of the SQlite.
 
-
 ## Parser
 
 The program provides basic parsing for the following SQL clauses `UPDATE`, `INSERT`, `WHERE`, `VALUES`, `SET`, `FROM`, `DELETE`. The parser is capable of handling multiple statements as well as comments.

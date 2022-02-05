@@ -26,7 +26,21 @@ class Database
     tables.map { |table| table.to_s[1..table.length] }
   end
 
+  def find_table_path(path)
+    return nil unless File.file? path
+
+    table_keypairs = File.read(@path).split(/\n/)
+
+    table_keypairs.map do |table_keypair|
+      table_name, table_path = table_keypair.split('=')
+
+      return table_name if table_path == path
+    end
+    nil
+  end
+
   def import_table(name, path)
+    return unless _valid_args?(name, path)
     return unless _file_exists? path, 'Table'
 
     destination = "data/#{name}_table.csv"
@@ -36,6 +50,16 @@ class Database
       file << "#{name}=#{destination}"
     end
     _load_tables([{ name: name, path: destination }])
+  end
+
+  def create_temp_table(path)
+    return unless _file_exists? path, 'Table'
+
+    _load_tables([{ name: 'temp', path: path }])
+  end
+
+  def free_table(name)
+    send("#{name}=", nil)
   end
 
   private
@@ -60,6 +84,13 @@ class Database
     return true if File.file? path
 
     puts "error: #{type} at #{path} does not exist."
+    false
+  end
+
+  def _valid_args?(name, path)
+    return true if !name.nil? && !path.nil?
+
+    puts 'you must provide a name and the path to a csv when importing a table'
     false
   end
 end

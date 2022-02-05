@@ -6,11 +6,15 @@ class Request
   alias valid? valid
   alias complete? complete
 
-  def initialize(path)
-    @database = Database.new(path)
+  def initialize(database)
+    @database = database
     @request = _init_request
     @valid = true
     @complete = false
+  end
+
+  def load_database(database)
+    @database = database
   end
 
   def reset
@@ -79,6 +83,7 @@ class Request
   end
 
   def run
+    csv = _handle_csv?
     return unless _table_exists?
 
     case @request[:action]
@@ -91,9 +96,24 @@ class Request
     when :update
       _update
     end
+
+    @database.free_table('temp') if csv
   end
 
   private
+
+  # if user passes a CSV path as a table the program will load and index data in place.
+  # Though this is a less efficient way to run the program
+
+  def _handle_csv?
+    return false if @request[:table].nil?
+    return false unless @request[:table].match?(/^.*\.csv/)
+
+    @database.create_temp_table(@request[:table])
+
+    @request[:table] = 'temp'
+    true
+  end
 
   def _select
     if @request[:where].empty?

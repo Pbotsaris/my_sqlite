@@ -28,6 +28,7 @@ module TokenizerImplementation
     [/^'[^']*/, 'STRING'],
     [/^=/, 'ASSIGN'],
     [/^\([^)]*/, 'PARAMS'], # index 16 see below
+    [/^[^*].*\.csv/, 'IDENTIFIER'], # match .csv as indetifier
     [/\w+|\*/, 'IDENTIFIER'] # will also match the * wildcard
   ].freeze
 
