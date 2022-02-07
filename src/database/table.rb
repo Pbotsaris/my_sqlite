@@ -165,6 +165,8 @@ class Table
     file = File.open(@path)
     lines = _find_lines(file, indexes)
     file.close
+    return nil if lines[0].nil?
+
     lines.map { |line| CSV.parse_line line }
   end
 
