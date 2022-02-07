@@ -7,21 +7,20 @@ A naive implementation of the SQlite. The entry point to the program is the file
 ## Basic Usage
 There are two ways you can use `my_sqlite` 
 
-1. loading the a table from a CSV or 
+1. loading a table from a CSV or 
 2. querying a CSV file directly.
 
-Loading a table from a CSV is much more performant as the program will index the table when you import the CSV. When you run a query, the table is already indexed and ready to go. It will also create a copy of the CSV file in the `data/` directory
-so editing a table will NOT modify your original csv file.
+Loading your tables from a CSV is the more performant because the program will index the table when you import the CSV. Then, when you run a query the table is already indexed and ready to go. Importing will also create a copy of the CSV file in the `data/` directory so editing a table will NOT modify your original csv file.
 
 When you query a csv file directly however, the program has to create a temporary table and index for this table at every request. This slows things down a lot. Updating, delete and insert will
 modify your original CSV file.
 
 ## Loading the database from a file
-You can load a database file with as many table as you want. To load a database you must pass in as the firt argument when running the program.
+A database can be loaded from a file with as many table as you want. To load a database you must pass in as the firt argument when running the program.
 
     ruby src/my_sqlite.rb data/database_name.db
 
-Database files are a simple text files with `key=pair` values where the `key` is the name of a table and `pair` the path to a `.csv` file where data will be persisted. Example below
+Database files are simple text files containing `key=pair` values where the `key` is the name of a table and `pair` is the path to the CSV. Example below:
 
 ```
 player=data/nba_players.csv
@@ -29,7 +28,6 @@ player_data=data/nba_player_data.csv
 ```
 
  The program will create a temporary database and persist to `temp.db` when you launch it without specifying a database to load.
-
 
 ## Importing a table from a CSV file
 
@@ -41,7 +39,7 @@ So if you want to import the table `players` from `nba_players.csv` run:
 
     sqlite>import players data/nba_players.csv;
 
-You can use the `table` command to list the tables in the database:
+You can use the `table` command to list the tables in the current database:
 
     sqlite> tables
     
@@ -51,7 +49,7 @@ Note that when you import tables to a database it will **COPY** the csv file to 
 
 ## Running 
 
-When you import a table you don't need to provide the full path of a csv CSV to run a query:
+When you import a table you don't need to provide the full path of a CSV to run a query:
 
     sqlite>import players data/nba_players.csv
     sqlite>SELECT * FROM players WHERE Player='Nelson Bobb';
@@ -114,6 +112,10 @@ Or you could just import the other table in and run the join:
 Note that providing the columns to create the join you can use both syntaxes `columnA=columnB` or `tableA.column=tableB=column`. Both will work. Example:
 
     sqlite> SELECT * FROM players JOIN player_data ON players.Player=player_data.name;
+
+## Indexing
+
+  `my_sqlite` indexes the tables using a [trie](https://en.wikipedia.org/wiki/Trie#:~:text=In%20computer%20science%2C%20a%20trie,key%2C%20but%20by%20individual%20characters.) data structure. Each column of a table has it's own trie to keep track of the indexes.
 
 ## Parser
 
