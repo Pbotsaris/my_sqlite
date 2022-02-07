@@ -5,10 +5,10 @@ A naive implementation of the SQlite. The entry point to the program is the file
     ruby src/my_sqlite.rb
 
 ## Basic Usage
-There are two ways you can use `my_sql` 
+There are two ways you can use `my_sqlite` 
 
 1. loading the a table from a csv or 
-2. querying a .csv directly.
+2. querying a .csv file directly.
 
 Loading a table from a CSV is much more performant as the program will index the table upon loading. It will also create a copy of the `.csv` file in the `data/` directory
 so editing a table will NOT modify your original csv file.
