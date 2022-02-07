@@ -83,6 +83,9 @@ class Request
 
   def on(on)
     column, join_column = on
+
+    return if column.nil? || join_column.nil?
+
     column = column.include?('.') ? _remove_dot(column) : column
     join_column = join_column.include?('.') ? _remove_dot(join_column) : join_column
 
@@ -238,7 +241,7 @@ class Request
       values: [],
       where: [],
       order: { columns: nil, sort: :asc },
-      join: { table: nil, on: [] },
+      join: { table: nil, on: [], where: [] },
       action: nil }
   end
 
