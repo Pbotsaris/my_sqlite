@@ -7,16 +7,16 @@ A naive implementation of the SQlite. The entry point to the program is the file
 ## Basic Usage
 There are two ways you can use `my_sqlite` 
 
-1. loading the a table from a csv or 
-2. querying a .csv file directly.
+1. loading the a table from a CSV or 
+2. querying a CSV file directly.
 
-Loading a table from a CSV is much more performant as the program will index the table upon loading. It will also create a copy of the `.csv` file in the `data/` directory
+Loading a table from a CSV is much more performant as the program will index the table when you import the CSV. When you run a query, the table is already indexed and ready to go. It will also create a copy of the CSV file in the `data/` directory
 so editing a table will NOT modify your original csv file.
 
-When you query a csv file directly however, the program has to create a temporary table and index for this table which makes the request take much longer. Updating, delete and insert will
-modify your original csv file.
+When you query a csv file directly however, the program has to create a temporary table and index for this table at every request. This slows things down a lot. Updating, delete and insert will
+modify your original CSV file.
 
-## Loading database from a file
+## Loading the database from a file
 You can load a database file with as many table as you want. To load a database you must pass in as the firt argument when running the program.
 
     ruby src/my_sqlite.rb data/database_name.db
@@ -31,7 +31,7 @@ player_data=data/nba_player_data.csv
  The program will create a temporary database and persist to `temp.db` when you launch it without specifying a database to load.
 
 
-## Importing table from a csv
+## Importing a table from a CSV file
 
 You can import a table from csv using the following command:
 
@@ -51,13 +51,13 @@ Note that when you import tables to a database it will **COPY** the csv file to 
 
 ## Running 
 
-When you import a table you don't need to provide the full path of a csv file to run a query:
+When you import a table you don't need to provide the full path of a csv CSV to run a query:
 
     sqlite>import players data/nba_players.csv
     sqlite>SELECT * FROM players WHERE Player='Nelson Bobb';
     Nelson Bobb | 183 | 77 | Temple University | 1924 | Philadelphia | Pennsylvania |
 
-To run a query directly on a csv file you must provide the path of that csv file:
+To run a query directly on a CSV file you must provide the path to the file:
     
     sqlite>SELECT * FROM data/players_table.csv WHERE Player='Nelson Bobb';
     Nelson Bobb | 183 | 77 | Temple University | 1924 | Philadelphia | Pennsylvania |
