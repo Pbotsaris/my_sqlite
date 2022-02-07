@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'readline'
-require 'pp'
 require_relative './parser/parser'
 require_relative './request'
 require_relative './database/database'
@@ -12,11 +11,13 @@ class SQlite
   include SQLiteImplementation
   def initialize(path)
     @parser = Parser.new
-    @request = Request.new(path)
+    @database = path.nil? ? nil : Database.new(path)
+    @request = Request.new(@database)
     @ast = {}
   end
 
   def run
+    database?
     while (line = Readline.readline('sqlite>', true))
       @request.reset
       break if quit? line
@@ -46,7 +47,9 @@ class SQlite
   def table?(line)
     if line.match?(/^tables|^.tables/)
       puts '', 'Tables:'
-      @database.list_tables.each { |table| puts table }
+      tables = @database&.list_tables
+      tables&.each { |table| puts table }
+      puts 'Database and/or tables not loaded.' if tables.nil?
       puts ''
       return true
     end
@@ -62,6 +65,17 @@ class SQlite
     false
   end
 
+  def database?
+    return if @database
+
+    puts "database not loaded. creating new 'temp.db'...\nYou can import from csv using the `import <path-to-csv>'"
+
+    File.open('data/temp.db', 'w') { |f| f.write('') }
+
+    @database = Database.new('data/temp.db')
+    @request.load_database(@database)
+  end
+
   def print_error
     p @parser.error
     @parser.error = false
@@ -74,6 +88,5 @@ class SQlite
   end
 end
 
-program = SQlite.new('data/nba_test.db')
-
+program = SQlite.new(ARGV.empty? ? nil : ARGV[0])
 program.run

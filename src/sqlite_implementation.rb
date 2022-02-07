@@ -79,8 +79,8 @@ module SQLiteImplementation
   end
 
   def on(node)
-    columns = load_columns(node, [])
-    @request.on(columns)
+    column, join_column = load_columns_values_pairs(node, { columns: [], values: [] }).values
+    @request.on([column[0], join_column[0]])
   end
 
   def order(node)
@@ -93,9 +93,12 @@ module SQLiteImplementation
     return keypairs if node.nil?
 
     if node[:type] == Types::ASSIGN
-
       keypairs[:columns] << node[:left][:name]
-      keypairs[:values] << node[:right][:value]
+      if node[:right][:type] == Types::IDENTIFIER
+        keypairs[:values] << node[:right][:name]
+      else
+        keypairs[:values] << node[:right][:value]
+      end
     end
 
     load_columns_values_pairs(node[:left], keypairs)

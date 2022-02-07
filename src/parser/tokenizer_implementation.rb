@@ -28,7 +28,10 @@ module TokenizerImplementation
     [/^'[^']*/, 'STRING'],
     [/^=/, 'ASSIGN'],
     [/^\([^)]*/, 'PARAMS'], # index 16 see below
-    [/\w+|\*/, 'IDENTIFIER'] # will also match the * wildcard
+    [/^\*/, 'IDENTIFIER'], # match the * wildcard
+    [/^^[A-Za-z_-]+\.[A-Za-z]+/, 'IDENTIFIER'], # join syntax table.column
+    [%r{^[^*][A-Za-z/_-]+\.csv}, 'IDENTIFIER'], # match .csv as indetifier. may include path /
+    [/^\w+/, 'IDENTIFIER'] # will also match the * wildcard
   ].freeze
 
   PARAMS_REGEX = /^\([^)]*/.freeze
@@ -42,6 +45,7 @@ module TokenizerImplementation
     matched_string = regex == PARAMS_REGEX ? matched_string[1..-1] : matched_string # remove parenthesis from PARAMS
 
     @cursor += matched_string.length
+
     matched_string
   end
 end

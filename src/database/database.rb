@@ -12,7 +12,7 @@ class Database
 
   def initialize(path)
     @loaded = false
-    return unless _file_exists? path, 'Database'
+    return unless _file_exists? path
 
     @path = path
     table_files = _parse_keypairs(path)
@@ -27,7 +27,8 @@ class Database
   end
 
   def import_table(name, path)
-    return unless _file_exists? path, 'Table'
+    return unless _valid_args?(name, path)
+    return unless _file_exists? path
 
     destination = "data/#{name}_table.csv"
     FileUtils.cp(path, destination)
@@ -36,6 +37,20 @@ class Database
       file << "#{name}=#{destination}"
     end
     _load_tables([{ name: name, path: destination }])
+  end
+
+  # this method is used querying/editing tables directly from a csv
+  # exeample: select * from example_table.csv
+  def create_temp_table(path, name)
+    return false unless _file_exists? path
+
+    _load_tables([{ name: name, path: path }])
+
+    true
+  end
+
+  def free_table(name)
+    send("#{name}=", nil)
   end
 
   private
@@ -56,10 +71,17 @@ class Database
     end
   end
 
-  def _file_exists?(path, type)
+  def _file_exists?(path)
     return true if File.file? path
 
-    puts "error: #{type} at #{path} does not exist."
+    puts "File at #{path} does not exist."
+    false
+  end
+
+  def _valid_args?(name, path)
+    return true if !name.nil? && !path.nil?
+
+    puts 'you must provide a name and the path to a csv when importing a table'
     false
   end
 end

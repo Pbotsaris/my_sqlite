@@ -168,8 +168,8 @@ module ParserImplementation
   def create_keypair(left)
     root = assign_operator
     root[:left] = left
-    root[:right] = literal
-
+    # joins clauses have identifiers as pair. e.g tableA.column=tableB.column
+    root[:right] = identifier? ? identifier : literal
     root
   end
 

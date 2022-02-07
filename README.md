@@ -1,7 +1,120 @@
 # My SQLite
 
-A naive implementation of the SQlite.
+A naive implementation of the SQlite. The entry point to the program is the file `my_sqlite.rb` in the `src` directory. To run use ruby:
 
+    ruby src/my_sqlite.rb
+
+## Basic Usage
+There are two ways you can use `my_sql` 1. loading the a table from a csv or 2. querying a .csv directly.
+
+Loading a table from a CSV is much more performant as the program will index the table upon loading. It will also create a copy of the `.csv` file in the `data/` directory
+so editing a table will NOT modify your original csv file.
+
+When you query a csv file directly however, the program has to create a temporary table and index this table which makes the request take much longer. Updating, delete and insert will
+modify your original csv file.
+
+## Loading database from a file
+You can load a database file with as many table as you want. To load a database you must pass in as the firt argument when running the program.
+
+    ruby src/my_sqlite.rb data/database_name.db
+
+Database files are a simple text files with `key=pair` values where the `key` is the name of a table and `pair` the path to a `.csv` file where data will be persisted. Example below
+
+```
+player=data/nba_players.csv
+player_data=data/nba_player_data.csv
+```
+
+ The program will create a temporary database and persist to `temp.db` when you launch it without specifying a database to load.
+
+
+## Importing table from a csv
+
+You can import a table from csv using the following command:
+
+    sqlite>import table_name path/to/csv;
+
+So if you want to import the table `players` from `nba_players.csv` run:
+
+    sqlite>import players data/nba_players.csv;
+
+You can use the `table` command to list the tables in the database:
+
+    sqlite> tables
+    
+    players
+
+Note that when you import tables to a database it will **COPY** the csv file to the `data/` directory.
+
+## Running 
+
+When you import a table you don't need to provide the full path of a csv file to run a query:
+
+    sqlite>import players data/nba_players.csv
+    sqlite>SELECT * FROM players WHERE Player='Nelson Bobb';
+    Nelson Bobb | 183 | 77 | Temple University | 1924 | Philadelphia | Pennsylvania |
+
+To run a query directly on a csv file you must provide the path of that csv file:
+    
+    sqlite>SELECT * FROM data/players_table.csv WHERE Player='Nelson Bobb';
+    Nelson Bobb | 183 | 77 | Temple University | 1924 | Philadelphia | Pennsylvania |
+
+## Examples
+
+### SELECT and FROM 
+
+SELECT column1, column2 [...] FROM a table.
+
+    sqlite>SELECT Player, height FROM players;
+
+### ORDER BY
+
+Orders the query result by a given column. You can order as `ASC` or `DESC`.
+    
+    sqlite>SELECT * FROM players ORDER BY height DESC;
+
+### WHERE
+
+Only returns rows where column = criteria matches.
+
+    sqlite>SELECT * FROM players WHERE Player='Nelson Bobb';
+
+
+### INSERT INTO and VALUES
+
+Inserts a column.  Number of columns must match items in VALUES
+
+    sqlite>INSERT INTO players VALUES(Maradonna, 190, 50, BsAs University, 1980, Buenos Aires, BS);
+
+### UPDATE
+
+Updates a certain column of a row. Normally used with a `WHERE` clause to find the row to update.
+
+    sqlite>UPDATE players SET height=190, collage='NYU' WHERE Player='Nelson Bobb';
+
+### DELETE
+
+Deletes a row from a table.
+    sqlite> DELETE FROM players WHERE Player='Nelson Bobb'
+
+### JOIN
+  
+Joins two table together. You can join imported tables with external csv files together as in the example below:
+
+     sqlite> SELECT * FROM player_test JOIN data/nba_player_data.csv ON Player=name;
+
+Or you could just import the other table in and run the join:
+
+    sqlite> import player_data data/nba_player_data.csv
+    sqlite> SELECT * FROM players JOIN player_data ON Player=name;
+
+
+Note that providing the columns to create the join you can use both syntaxes `columnA=columnB` or `tableA.column=tableB=column`. Both will work. Example:
+
+    sqlite> SELECT * FROM players JOIN player_data ON players.Player=player_data.name;
+
+
+### 
 
 ## Parser
 

@@ -11,7 +11,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [],
                 order: { columns: %w[name], sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, on:[], where: [] },
                 action: :select }
 
     parser = Parser.new
@@ -28,7 +28,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [],
                 order: { columns: %w[name], sort: :desc },
-                join: {},
+                join: { table: nil, on: [], where: [] },
                 action: :select }
 
     parser = Parser.new
@@ -45,7 +45,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [],
                 order: { columns: %w[name id], sort: :desc },
-                join: {},
+                join: { table: nil, on: [], where: [] },
                 action: :select }
 
     parser = Parser.new
@@ -62,7 +62,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [{ column: 'name', term: 'Khalil' }, { column: 'id', term: '10' }],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, on: [], where: [] },
                 action: :select }
 
     parser = Parser.new
@@ -74,17 +74,17 @@ describe 'CLI Select' do
     expect(request.request).to eq(compare)
   end
 
-  it 'rejects SELECT columns FROM table JOIN table ON column, column' do
+  it 'rejects SELECT columns FROM table JOIN table ON column=column' do
     compare = { table: 'students',
                 columns: %w[id name],
                 values: [],
                 where: [],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: { table: 'homework', columns: %w[id class] },
-                action: :select }
+                join: { table: 'homework', on: %w[id class], where: [] },
+                action: :join }
 
     parser = Parser.new
-    ast = parser.parse('SELECT id, name FROM students JOIN homework ON id, class;')
+    ast = parser.parse('SELECT id, name FROM students JOIN homework ON id=class;')
 
     program = SQlite.new('data/nba_test.db')
     request = program.test(ast)
@@ -100,7 +100,7 @@ describe 'CLI insert delete update' do
                 values: %w[Khalil 19 Israel],
                 where: [],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, on: [], where: [] },
                 action: :insert }
 
     parser = Parser.new
@@ -117,7 +117,7 @@ describe 'CLI insert delete update' do
                 values: [],
                 where: [{ column: 'name', term: 'Khalil' }],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, on: [], where: [] },
                 action: :delete }
 
     parser = Parser.new
@@ -134,7 +134,7 @@ describe 'CLI insert delete update' do
                 values: ['k@email.com', '28'],
                 where: [{ column: 'name', term: 'Khalil' }],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, on: [], where: [] },
                 action: :update }
 
     parser = Parser.new
