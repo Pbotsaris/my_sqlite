@@ -4,7 +4,6 @@
 module Utils
   # Helper module to print query results
   module Printer
-
     def print(data, columns)
       data.each do |row|
         block = proc { |column, i| i.zero? ? print("| #{row[column]} |") : print(" #{row[column]} |") }

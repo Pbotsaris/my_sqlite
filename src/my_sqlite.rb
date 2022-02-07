@@ -40,7 +40,6 @@ class SQlite
     @request
   end
 
-
   def quit?(line)
     line.match?(/^quit|^.quit/)
   end

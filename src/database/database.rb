@@ -12,7 +12,7 @@ class Database
 
   def initialize(path)
     @loaded = false
-    return unless _file_exists? path, 'Database'
+    return unless _file_exists? path
 
     @path = path
     table_files = _parse_keypairs(path)
@@ -26,22 +26,9 @@ class Database
     tables.map { |table| table.to_s[1..table.length] }
   end
 
-  def find_table_path(path)
-    return nil unless File.file? path
-
-    table_keypairs = File.read(@path).split(/\n/)
-
-    table_keypairs.map do |table_keypair|
-      table_name, table_path = table_keypair.split('=')
-
-      return table_name if table_path == path
-    end
-    nil
-  end
-
   def import_table(name, path)
     return unless _valid_args?(name, path)
-    return unless _file_exists? path, 'Table'
+    return unless _file_exists? path
 
     destination = "data/#{name}_table.csv"
     FileUtils.cp(path, destination)
@@ -52,10 +39,14 @@ class Database
     _load_tables([{ name: name, path: destination }])
   end
 
-  def create_temp_table(path)
-    return unless _file_exists? path, 'Table'
+  # this method is used querying/editing tables directly from a csv
+  # exeample: select * from example_table.csv
+  def create_temp_table(path, name)
+    return false unless _file_exists? path
 
-    _load_tables([{ name: 'temp', path: path }])
+    _load_tables([{ name: name, path: path }])
+
+    true
   end
 
   def free_table(name)
@@ -80,10 +71,10 @@ class Database
     end
   end
 
-  def _file_exists?(path, type)
+  def _file_exists?(path)
     return true if File.file? path
 
-    puts "error: #{type} at #{path} does not exist."
+    puts "File at #{path} does not exist."
     false
   end
 

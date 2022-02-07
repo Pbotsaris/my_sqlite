@@ -21,37 +21,32 @@ class Table
 
   # Lists a table
   def list(columns, order)
-    return unless _column_exists? columns
+    return nil unless _column_exists? columns
 
     data = []
     CSV.foreach(@path, headers: true) { |row| data << row.to_h }
-
     # sort takes only one argument in this implementation
     data.sort_by! { |row| row[order[:columns][0]] } unless order[:columns].nil?
 
     data.reverse! if order[:sort] == :desc
 
-    # list will only print in this implementation. it does not return any data
-    Printer.print_table_hashes(data, columns)
+    data
   end
 
   # list a table with where clause
   def list_where(columns, where, order)
-    return unless _column_exists? columns
+    return nil unless _column_exists? columns
 
     cols = []
 
     @headers.each_with_index do |header, i|
-      cols.append(i) if columns.include?(header) || columns[0] == '*'
+      # increment i  by one to skip first id column
+      cols.append(i + 1) if columns.include?(header) || columns[0] == '*'
     end
 
     table = find(where[:column], where[:term])
 
-    return if table.nil?
-
-    table = _sort(table, order)
-
-    Printer.print_table_arrays(table, cols)
+    { columns: cols, data: _sort(table, order) }
   end
 
   # Finds database rows according search term in a column

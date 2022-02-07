@@ -11,7 +11,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [],
                 order: { columns: %w[name], sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :select }
 
     parser = Parser.new
@@ -28,7 +28,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [],
                 order: { columns: %w[name], sort: :desc },
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :select }
 
     parser = Parser.new
@@ -45,7 +45,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [],
                 order: { columns: %w[name id], sort: :desc },
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :select }
 
     parser = Parser.new
@@ -62,7 +62,7 @@ describe 'CLI Select' do
                 values: [],
                 where: [{ column: 'name', term: 'Khalil' }, { column: 'id', term: '10' }],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :select }
 
     parser = Parser.new
@@ -81,7 +81,7 @@ describe 'CLI Select' do
                 where: [],
                 order: { columns: nil, sort: :asc }, # :asc is default
                 join: { table: 'homework', columns: %w[id class] },
-                action: :select }
+                action: :join }
 
     parser = Parser.new
     ast = parser.parse('SELECT id, name FROM students JOIN homework ON id, class;')
@@ -100,7 +100,7 @@ describe 'CLI insert delete update' do
                 values: %w[Khalil 19 Israel],
                 where: [],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :insert }
 
     parser = Parser.new
@@ -117,7 +117,7 @@ describe 'CLI insert delete update' do
                 values: [],
                 where: [{ column: 'name', term: 'Khalil' }],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :delete }
 
     parser = Parser.new
@@ -134,7 +134,7 @@ describe 'CLI insert delete update' do
                 values: ['k@email.com', '28'],
                 where: [{ column: 'name', term: 'Khalil' }],
                 order: { columns: nil, sort: :asc }, # :asc is default
-                join: {},
+                join: { table: nil, columns: [] },
                 action: :update }
 
     parser = Parser.new
