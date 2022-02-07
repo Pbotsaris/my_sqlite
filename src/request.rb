@@ -136,7 +136,7 @@ class Request
       Printer.print_table_hashes(_select_without_where, @request[:columns])
     else
       table = _select_where
-      Printer.print_table_arrays(table[:data], table[:columns]) unless table.nil? || select[:data].nil?
+      Printer.print_table_arrays(table[:data], table[:columns]) unless table.nil? || table[:data].nil?
     end
   end
 
