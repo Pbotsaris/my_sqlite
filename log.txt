@@ -1,6 +1,0 @@
-[?2004hsqlite>edjkd
-[?2004l" Unexpected end of input 'IDENTIFIER'. expected: ';'"
-/home/pedro/dev/ruby-elu/my_sqlite/src/request.rb:93:in `_table_exists?': undefined method `request' for {:table=>nil, :columns=>[], :values=>[], :where=>[], :order=>{}, :join=>{}, :action=>nil}:Hash (NoMethodError)
-	from /home/pedro/dev/ruby-elu/my_sqlite/src/request.rb:76:in `run'
-	from src/my_sqlite.rb:32:in `run'
-	from src/my_sqlite.rb:74:in `<main>'
