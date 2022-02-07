@@ -13,7 +13,7 @@ There are two ways you can use `my_sql`
 Loading a table from a CSV is much more performant as the program will index the table upon loading. It will also create a copy of the `.csv` file in the `data/` directory
 so editing a table will NOT modify your original csv file.
 
-When you query a csv file directly however, the program has to create a temporary table and index this table which makes the request take much longer. Updating, delete and insert will
+When you query a csv file directly however, the program has to create a temporary table and index for this table which makes the request take much longer. Updating, delete and insert will
 modify your original csv file.
 
 ## Loading database from a file
