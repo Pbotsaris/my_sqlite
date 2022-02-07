@@ -5,7 +5,10 @@ A naive implementation of the SQlite. The entry point to the program is the file
     ruby src/my_sqlite.rb
 
 ## Basic Usage
-There are two ways you can use `my_sql` 1. loading the a table from a csv or 2. querying a .csv directly.
+There are two ways you can use `my_sql` 
+
+1. loading the a table from a csv or 
+2. querying a .csv directly.
 
 Loading a table from a CSV is much more performant as the program will index the table upon loading. It will also create a copy of the `.csv` file in the `data/` directory
 so editing a table will NOT modify your original csv file.
@@ -108,13 +111,9 @@ Or you could just import the other table in and run the join:
     sqlite> import player_data data/nba_player_data.csv
     sqlite> SELECT * FROM players JOIN player_data ON Player=name;
 
-
 Note that providing the columns to create the join you can use both syntaxes `columnA=columnB` or `tableA.column=tableB=column`. Both will work. Example:
 
     sqlite> SELECT * FROM players JOIN player_data ON players.Player=player_data.name;
-
-
-### 
 
 ## Parser
 
