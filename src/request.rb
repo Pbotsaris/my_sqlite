@@ -137,7 +137,8 @@ class Request
 
   def _select
     if _where?
-      Printer.print_table_hashes(_select_without_where, @request[:columns])
+       table = _select_without_where
+      Printer.print_table_hashes(table, @request[:columns]) unless table.nil? || table[:data].nil?
     else
       table = _select_where
       Printer.print_table_arrays(table[:data], table[:columns]) unless table.nil? || table[:data].nil?
@@ -162,8 +163,6 @@ class Request
     to_update = @request[:columns].each_with_index.map do |column, i|
       { column: column, value: @request[:values][i] }
     end
-
-    p to_update
 
     where = @request[:where][0]
 
