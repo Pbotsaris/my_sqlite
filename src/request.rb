@@ -163,6 +163,8 @@ class Request
       { column: column, value: @request[:values][i] }
     end
 
+    p to_update
+
     where = @request[:where][0]
 
     @database.instance_variable_get("@#{@request[:table]}").update(to_update, where)

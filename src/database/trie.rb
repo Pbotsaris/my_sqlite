@@ -40,6 +40,8 @@ class Trie
 
   # finds a word in the TRIE
   def find(word)
+    return nil if word.nil?
+
     charlist = word.split('')
     current = @root
 
@@ -58,6 +60,8 @@ class Trie
   # Updates a node.id in the TRIE with a new_id.  If node does not have any id left
   # remove word from TRIE. It does not clear references in the tree
   def update(id, new_id, word)
+    return nil if word.nil?
+
     node = find(word)
     node.id = node.id.reject { |i| i == id }
     node.id << new_id
@@ -65,6 +69,8 @@ class Trie
 
   #  Deletes a node.id in the TRIE
   def delete(id, word)
+    return nil if word.nil?
+
     node = find(word)
     node.id = node.id.reject { |i| i == id }
     node.is_word = false if node.id.empty?
