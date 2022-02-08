@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require_relative './utils'
+require 'pp'
 
 # a request
 class Request
@@ -68,8 +69,11 @@ class Request
       # integer needs to be converted to strings for TRIE
       { column: column, term: values[i].is_a?(Integer) ? values[i].to_s : values[i] }
     end
-
-    @request[:where] = where
+    if @request[:action] == :join
+      @request[:join][:where] = where
+    else
+      @request[:where] = where
+    end
   end
 
   def order(columns, option)
@@ -178,47 +182,38 @@ class Request
   def _join
     return unless _table_exists?(@request[:join][:table])
 
+    return unless columns_exist? @request[:table], @request[:join][:on][0]
+    return unless columns_exist? @request[:join][:table], @request[:join][:on][1]
+
     if _where?
       _join_without_where
     else
       _join_where
     end
   end
-  #  DO same for WHERE 
+
   def _join_without_where
     select = _select_without_where
     join = _select_join
     return if join.nil? || select.nil?
 
-    return unless columns_exist? @request[:table], @request[:join][:on][0]
-    return unless columns_exist? @request[:join][:table], @request[:join][:on][1]
-
-    joined = concat_table_hashes(select, join)
+    joined = _merge_tables(select, join)
+    joined = _filter_join(joined)
     Printer.print_table_hashes(joined, @request[:columns]) unless joined.nil?
   end
 
   def _join_where
     select = _select_where
+    select[:headers] = _get_headers(@request[:table])
 
     return if select.nil? || select[:data].nil?
 
-    Printer.print_table_arrays(select[:data], select[:columns])
-  end
+    select[:data] = _array_table_to_hash_table(select)
+    join = _select_join
 
-  def concat_table_hashes(select, join)
-    joined = []
-
-    column = @request[:join][:on][0].to_sym
-    column_join = @request[:join][:on][1].to_sym
-
-    select.each do |row|
-      new_row = {}
-      join.each do |join_row|
-        new_row = join_row[column_join] == row[column] ? row.merge!(join_row) : row
-      end
-      joined.append(new_row)
-    end
-    joined
+    joined = _merge_tables(select[:data], join)
+    joined = _filter_join(joined)
+    Printer.print_table_hashes(joined, @request[:columns]) unless joined.nil?
   end
 
   def _select_without_where
@@ -233,6 +228,14 @@ class Request
 
   def _select_join
     @database.instance_variable_get("@#{@request[:join][:table]}").list('*', @request[:order])
+  end
+
+  def _filter_join(table)
+    return table.dup if @request[:join][:where].empty?
+
+    where = @request[:join][:where][0]
+    column = where[:column]
+    table.select { |row| row[column] == where[:term] }
   end
 
   def _init_request
@@ -273,7 +276,7 @@ class Request
   end
 
   def columns_exist?(table, column)
-    table_headers = @database.instance_variable_get("@#{table}").headers
+    table_headers = _get_headers(table)
     unless table_headers.include?(column)
       puts "The column #{column} does not exist in the table #{table}"
       return false
@@ -281,9 +284,40 @@ class Request
     true
   end
 
+  def _get_headers(table)
+    @database.instance_variable_get("@#{table}").headers
+  end
+
   def _convert_values(values)
     values.map do |value|
       value.is_a?(Integer) ? value.to_s : value
+    end
+  end
+
+  def _merge_tables(select, join)
+    joined = []
+
+    column = @request[:join][:on][0]
+    column_join = @request[:join][:on][1]
+
+    select.each do |row|
+      new_row = {}
+      join.each do |join_row|
+        new_row = join_row[column_join] == row[column] ? row.merge!(join_row) : row
+      end
+      joined.append(new_row)
+    end
+    joined
+  end
+
+  def _array_table_to_hash_table(select)
+    select[:data] = select[:data].map do |row|
+      result_row = {}
+      select[:columns].each do |column_index|
+        key = select[:headers][column_index - 1]
+        result_row[key] = row[column_index] unless key.nil?
+      end
+      result_row
     end
   end
 
