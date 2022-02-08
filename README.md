@@ -114,6 +114,7 @@ Updates a certain column of a row. Normally used with a `WHERE` clause to find t
 ### DELETE
 
 Deletes a row from a table.
+
     sqlite> DELETE FROM players WHERE Player='Nelson Bobb'
 
 ### JOIN
@@ -133,7 +134,8 @@ Note that providing the columns to create the join you can use both syntaxes `co
 
 ## Indexing
 
-  `my_sqlite` indexes the tables using a [trie](https://en.wikipedia.org/wiki/Trie#:~:text=In%20computer%20science%2C%20a%20trie,key%2C%20but%20by%20individual%20characters.) data structure. Each column of a table has it's own trie to keep track of the indexes.
+  `my_sqlite` indexes the tables using a [trie](https://en.wikipedia.org/wiki/Trie#:~:text=In%20computer%20science%2C%20a%20trie,key%2C%20but%20by%20individual%20characters.) data structure. Each column of a table has it's own trie to keep track of the indexes. 
+  The files within the `data/` directory should not be modified while the program is running otherwise the table - persisted to the file and the index - loaded in memory will go out of sync with each other. The index will no longer be representative of the table.
 
 ## Parser
 
