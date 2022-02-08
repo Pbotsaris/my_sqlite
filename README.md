@@ -47,6 +47,24 @@ You can use the `table` command to list the tables in the current database:
 
 Note that when you import tables to a database it will **COPY** the csv file to the `data/` directory.
 
+### I don't want to create database files and load tables
+
+Well, that is not a problem. We created a preloaded database with the testing csv files. Simply launch the program like so
+
+    ruby src/my_sqlite.rb data/database.db
+
+Now, run `tables` to check the available tables in this database:
+
+    sqlite> tables
+
+    Tables:
+      players
+      player_data
+
+You can now query tables:
+
+    sqlite> SELECT * FROM player_data
+
 ## Running 
 
 When you import a table you don't need to provide the full path of a CSV to run a query:
