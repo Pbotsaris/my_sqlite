@@ -138,7 +138,7 @@ class Request
   def _select
     if _where?
        table = _select_without_where
-      Printer.print_table_hashes(table, @request[:columns]) unless table.nil? || table[:data].nil?
+      Printer.print_table_hashes(table, @request[:columns]) unless table.nil?
     else
       table = _select_where
       Printer.print_table_arrays(table[:data], table[:columns]) unless table.nil? || table[:data].nil?
