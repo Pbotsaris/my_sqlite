@@ -12,9 +12,11 @@ To test the cli please run the following command:
 
     ruby src/my_sqlite_cli.rb data/database.db
 
-This command will load the tables in `database.db`. The tables are called `nba_players` and `nba_player_data` respectively.  **NOTE THAT THE CSV FILES FOR IMPORTED TABLES ARE IN THE /data folder.** 
+This command will load the tables in `database.db`. The tables are called `nba_players` and `nba_player_data` respectively.
 
-When you check the if CSV files for changes after a request you must look in `data/players_table.csv` and `data/player_data_table.csv`.
+**IMPORTANT: CSV FILES FOR IMPORTED TABLES ARE IN THE `/data` DIRECTORY.** 
+
+When you verifying if CSV files had been altered after a request you must look in `data/players_table.csv` and `data/player_data_table.csv`.
 
 More information on how this program works below.
 
