@@ -1,6 +1,6 @@
 # My SQLite
 
-A naive implementation of the SQlite. The entry point to the program is the file `my_sqlite.rb` in the `src` directory. To run use ruby:
+A naive implementation of the SQlite. 
 
     ruby src/my_sqlite.rb
 
