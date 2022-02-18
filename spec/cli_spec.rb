@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../src/my_sqlite'
+require_relative '../src/my_sqlite_cli'
 require_relative '../src/parser/parser'
 
 # tests for CLI interface
