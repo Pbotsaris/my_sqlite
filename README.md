@@ -2,11 +2,9 @@
 
 A naive implementation of the SQlite. 
 
-    ruby src/my_sqlite.rb
-
 ##  Reviewing this project
 
-the review file for interface with the database using the `MySqliteRequest` class is in `src/my_sqlite_request.rb`. There is commented code already with the required tests. Uncomment the code and run using ruby
+To Review interfacing with the database via the `MySqliteRequest` class use the in `src/my_sqlite_request.rb` file. There is commented code already with the required tests. Uncomment the code and run using ruby:
 
     ruby src/my_sqlite_request.rb
 
@@ -14,7 +12,8 @@ To test the cli please run the following command:
 
     ruby src/my_sqlite_cli.rb data/database.db
 
-This command will load cvs to the database. The tables are called `nba_players` and `nba_player_data` respectively.  ** NOTE THAT THE CSV FILES FOR IMPORTED TABLES ARE IN THE /data folder. ** 
+This command will load the tables in `database.db`. The tables are called `nba_players` and `nba_player_data` respectively.  **NOTE THAT THE CSV FILES FOR IMPORTED TABLES ARE IN THE /data folder.** 
+
 When you check the if CSV files for changes after a request you must look in `data/players_table.csv` and `data/player_data_table.csv`.
 
 More information on how this program works below.
