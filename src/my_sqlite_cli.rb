@@ -6,7 +6,7 @@ require_relative './request'
 require_relative './database/database'
 require_relative './sqlite_implementation'
 
-# a class
+# main class entrypoint for CLI interface
 class SQlite
   include SQLiteImplementation
   def initialize(path)

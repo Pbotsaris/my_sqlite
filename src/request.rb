@@ -6,6 +6,8 @@ require 'pp'
 class Request
   include Utils
   attr_reader :request, :valid, :complete
+  attr_accessor :cli
+
   alias valid? valid
   alias complete? complete
 
@@ -14,6 +16,7 @@ class Request
     @request = _init_request
     @valid = true
     @complete = false
+    @cli = true
   end
 
   def load_database(database)
@@ -76,8 +79,8 @@ class Request
     end
   end
 
-  def order(columns, option)
-    @request[:order] = { columns: columns, sort: option ? option.downcase.to_sym : :asc }
+  def order(column, order)
+    @request[:order] = { columns: column, sort: order ? order.downcase.to_sym : :asc }
   end
 
   def join(table)
@@ -137,11 +140,11 @@ class Request
 
   def _select
     if _where?
-       table = _select_without_where
-      Printer.print_table_hashes(table, @request[:columns]) unless table.nil?
+      table = _select_without_where
+      _print_hash(table)
     else
       table = _select_where
-      Printer.print_table_arrays(table[:data], table[:columns]) unless table.nil? || table[:data].nil?
+      _print_array(table)
     end
   end
 
@@ -192,6 +195,19 @@ class Request
       _join_where
     end
   end
+
+  def _print_hash(table)
+    return if table.nil?
+
+    @cli ? Printer.print_table_hashes(table, @request[:columns]) : puts(table)
+  end
+
+  def _print_array(table)
+    return if table.nil? || table[:data].nil?
+
+    @cli ? Printer.print_table_arrays(table[:data], table[:columns]) : puts(table)
+  end
+
 
   def _join_without_where
     select = _select_without_where
