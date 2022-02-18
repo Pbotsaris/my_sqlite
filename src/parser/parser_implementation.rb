@@ -184,6 +184,8 @@ module ParserImplementation
   end
 
   def literal
+    return handle_nil if @lookahead.nil?
+
     case @lookahead[:type]
     when 'NUMBER'
       numeric_literal
@@ -193,6 +195,11 @@ module ParserImplementation
       @error = "Unexpected literal: #{@lookahead[:type]}"
       nil
     end
+  end
+
+  def handle_nil
+    @error = 'Please provide a literal value to the assignment expression'
+    { type: Types::NUMERIC_LITERAL, value: '', right: nil, left: nil }
   end
 
   def string_literal
